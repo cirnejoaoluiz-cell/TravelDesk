@@ -48,6 +48,8 @@
 
   --font: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --container: 1120px;
+  /* Espaço da barra de status (app na tela de início). O claude.ai já reserva esse espaço: lá vale 0. */
+  --safe-top: env(safe-area-inset-top, 0px);
   --gutter: 24px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
@@ -745,10 +747,8 @@ input[type='time'].input {
 }
 
 .menu__list {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  z-index: 20;
+  position: fixed;
+  z-index: 50;
   min-width: 190px;
   padding: 5px;
   background: var(--surface);
@@ -763,7 +763,8 @@ input[type='time'].input {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 9px 10px;
+  height: 40px;
+  padding: 0 10px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -1016,7 +1017,7 @@ input[type='time'].input {
 /* ---------------------------------------------------------------- Layout */
 
 .page {
-  padding-top: 48px;
+  padding-top: calc(48px + var(--safe-top));
   padding-bottom: 64px;
 }
 
@@ -1042,7 +1043,7 @@ input[type='time'].input {
 
 @media (max-width: 640px) {
   .page {
-    padding-top: 28px;
+    padding-top: calc(28px + var(--safe-top));
   }
 
   .page-header {
@@ -1272,7 +1273,7 @@ input[type='time'].input {
 
 .trip-hero__inner {
   position: relative;
-  padding-top: 20px;
+  padding-top: calc(20px + var(--safe-top));
   padding-bottom: 32px;
   min-height: 300px;
   display: flex;

@@ -31,7 +31,7 @@ const css = await readFile(join(assetsDir, files.find((f) => f.endsWith('.css'))
 // O claude.ai envolve a página com <!doctype>, <head> e <body>: escrevemos só o conteúdo.
 const html = `<title>TravelDesk</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<style>${css.replace(/<\/style/gi, '<\\/style')}</style>
+<style>${css.replace(/<\/style/gi, '<\\/style')}:root{--safe-top:0px}</style>
 <div id="root"></div>
 <script type="module">${js.replace(/<\/script/gi, '<\\/script')}</script>
 `;
