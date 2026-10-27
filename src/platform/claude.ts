@@ -40,10 +40,16 @@ export interface ClaudeDownloads {
   save(request: { filename: string; data: string | Blob }): Promise<unknown>;
 }
 
+export interface ClaudeAssets {
+  upload(blob: Blob, options?: { type?: string }): Promise<{ id: string; url: string; sizeBytes: number; contentType: string }>;
+  delete(ref: string): Promise<{ deleted: boolean }>;
+}
+
 interface CapabilityMap {
   db: ClaudeDb;
   user: ClaudeUser;
   downloads: ClaudeDownloads;
+  assets: ClaudeAssets;
 }
 
 declare global {

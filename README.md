@@ -78,6 +78,19 @@ Princípios:
 - **As telas nunca acessam o armazenamento diretamente**: tudo passa por `TripRepository`, que é assíncrono.
 - **Regras de negócio ficam em `domain/`**, testáveis sem interface.
 
+### Arquivos da aba Docs
+
+Os anexos (PDF e imagens, até 20 MB cada) não ficam dentro da viagem: a viagem guarda só uma referência (`StoredFile`) e o conteúdo vai para um armazenamento de arquivos (`src/data/files/FileStore.ts`):
+
+| Onde o app roda | Armazenamento | Observações |
+| --- | --- | --- |
+| Site / `npm run dev` | IndexedDB do navegador (`IndexedDbFileStore`) | Privado no aparelho; exibido por endereços `blob:` temporários |
+| claude.ai | Assets do Artifact (`ClaudeAssetsFileStore`) | Servido só para quem tem acesso ao Artifact; PDFs abrem em nova aba ou são baixados |
+
+Para migrar para a nuvem, implemente `FileStore` com um bucket privado (Supabase Storage, S3 com URLs assinadas de curta duração) e escolha-o em `src/data/index.ts`.
+
+O backup JSON leva os dados dos documentos, mas não os arquivos.
+
 ### Migrar para um banco na nuvem
 
 1. Crie uma classe que implemente `TripRepository` (ex.: `SupabaseTripRepository`, `FirebaseTripRepository` ou uma API própria). O formato `Trip` mapeia direto para um documento JSON, ou pode ser dividido em tabelas (`trips`, `itinerary_items`, `activities`, `tasks`, `expenses`) com `trip_id`.
@@ -93,4 +106,5 @@ A chave do `localStorage` guarda um `version`; mudanças futuras de formato pode
 - **Itinerário**: voos, trens, ônibus, carros, barcos e hospedagens, com datas, horários, endereço (abre no mapa), localizador (copiar com um toque), link e observações. Ordem cronológica, agrupado por dia.
 - **Roteiro**: atividades por dia (gerados a partir das datas da viagem) e por cidade (filtro), com categoria, horário, endereço, link e notas; marcar como concluída, reordenar (↑/↓) ou ordenar por horário.
 - **Checklist**: tarefas com prazo opcional, destaque para atrasadas e próximas, progresso geral e lista de sugestões.
+- **Docs**: PDFs e imagens da viagem (passagens, hospedagem, seguro, ingressos, documentos pessoais), com visualização, download, edição e exclusão.
 - **Financeiro**: despesas com categoria, valor, moeda, data e status (pago, pendente, parcelado com controle de parcelas); totais de registrado/pago/pendente, comparação com o orçamento e distribuição por categoria. Despesas em outra moeda entram nos totais quando você informa a cotação.

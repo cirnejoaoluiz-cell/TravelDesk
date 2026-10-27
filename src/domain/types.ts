@@ -35,6 +35,7 @@ export interface Trip {
   activities: Activity[];
   tasks: ChecklistTask[];
   expenses: Expense[];
+  documents: TripDocument[];
   createdAt: string;
   updatedAt: string;
 }
@@ -130,4 +131,31 @@ export interface Expense {
   installments: number;
   paidInstallments: number;
   notes: string;
+}
+
+// ---------------------------------------------------------------------- Docs
+
+export type DocumentCategory = 'tickets' | 'lodging' | 'insurance' | 'admissions' | 'personal' | 'other';
+
+/**
+ * Referência a um arquivo guardado no armazenamento de arquivos (ver `data/files`).
+ * O conteúdo nunca fica dentro da viagem: só esta referência.
+ */
+export interface StoredFile {
+  /** Chave do arquivo no armazenamento (IndexedDB ou assets do claude.ai). */
+  id: string;
+  name: string;
+  /** Tipo MIME (application/pdf, image/jpeg…). */
+  type: string;
+  /** Tamanho em bytes. */
+  size: number;
+}
+
+export interface TripDocument {
+  id: ID;
+  name: string;
+  category: DocumentCategory;
+  description: string;
+  file: StoredFile | null;
+  createdAt: string;
 }

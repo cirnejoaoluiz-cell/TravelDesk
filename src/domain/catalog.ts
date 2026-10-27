@@ -1,6 +1,7 @@
 import type {
   ActivityCategory,
   CurrencyCode,
+  DocumentCategory,
   ExpenseCategory,
   ExpenseStatus,
   ItineraryType,
@@ -55,6 +56,15 @@ export const EXPENSE_STATUSES: Record<ExpenseStatus, string> = {
   paid: 'Pago',
   pending: 'Pendente',
   installments: 'Parcelado',
+};
+
+export const DOCUMENT_CATEGORIES: Record<DocumentCategory, string> = {
+  tickets: 'Passagens',
+  lodging: 'Hospedagem',
+  insurance: 'Seguro-viagem',
+  admissions: 'Ingressos',
+  personal: 'Documentos pessoais',
+  other: 'Outros',
 };
 
 export const SUGGESTED_TASKS = [

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarDays, CheckSquare, Map as MapIcon, MapPin, Pencil, Route, Trash2, Wallet } from 'lucide-react';
+import { ArrowLeft, CalendarDays, CheckSquare, FolderOpen, Map as MapIcon, MapPin, Pencil, Route, Trash2, Wallet } from 'lucide-react';
 import { Menu } from '../../components/Menu';
 import { useConfirm } from '../../components/Confirm';
 import { useToast } from '../../components/Toast';
@@ -13,12 +13,14 @@ import { ItineraryTab } from './itinerary/ItineraryTab';
 import { ScheduleTab } from './schedule/ScheduleTab';
 import { ChecklistTab } from './checklist/ChecklistTab';
 import { FinanceTab } from './finance/FinanceTab';
+import { DocsTab } from './docs/DocsTab';
 
 const TABS = [
   { slug: 'itinerario', label: 'Itinerário', icon: Route },
   { slug: 'roteiro', label: 'Roteiro', icon: MapIcon },
   { slug: 'checklist', label: 'Checklist', icon: CheckSquare },
   { slug: 'financeiro', label: 'Financeiro', icon: Wallet },
+  { slug: 'docs', label: 'Docs', icon: FolderOpen },
 ] as const;
 
 type TabSlug = (typeof TABS)[number]['slug'];
@@ -54,6 +56,7 @@ export function TripPage() {
     roteiro: trip.activities.length ? String(trip.activities.length) : '',
     checklist: trip.tasks.length ? `${doneTasks}/${trip.tasks.length}` : '',
     financeiro: trip.expenses.length ? String(trip.expenses.length) : '',
+    docs: trip.documents.length ? String(trip.documents.length) : '',
   };
 
   const handleEdit = async (draft: TripDraft) => {
@@ -139,6 +142,7 @@ export function TripPage() {
         {activeTab === 'roteiro' && <ScheduleTab trip={trip} update={update} />}
         {activeTab === 'checklist' && <ChecklistTab trip={trip} update={update} />}
         {activeTab === 'financeiro' && <FinanceTab trip={trip} update={update} />}
+        {activeTab === 'docs' && <DocsTab trip={trip} update={update} />}
       </div>
 
       <TripFormModal open={editing} initial={trip} onClose={() => setEditing(false)} onSubmit={handleEdit} />

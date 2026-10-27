@@ -4,6 +4,7 @@ import type {
   ChecklistTask,
   Expense,
   ItineraryItem,
+  TripDocument,
   Trip,
   TripDraft,
 } from './types';
@@ -33,6 +34,7 @@ export function createTrip(draft: TripDraft): Trip {
     activities: [],
     tasks: [],
     expenses: [],
+    documents: [],
     createdAt: now,
     updatedAt: now,
   };
@@ -93,6 +95,17 @@ export function emptyExpense(currency: Expense['currency']): Expense {
   };
 }
 
+export function emptyDocument(): TripDocument {
+  return {
+    id: createId(),
+    name: '',
+    category: 'other',
+    description: '',
+    file: null,
+    createdAt: new Date().toISOString(),
+  };
+}
+
 type Loose<T> = Partial<T> & Record<string, unknown>;
 
 /** Completa campos ausentes de uma viagem lida do armazenamento (compatibilidade entre versões). */
@@ -107,6 +120,7 @@ export function normalizeTrip(raw: Loose<Trip>): Trip {
     activities: (raw.activities ?? []).map((a) => ({ ...emptyActivity(), ...a })),
     tasks: (raw.tasks ?? []).map((t) => ({ ...createTask(''), ...t })),
     expenses: (raw.expenses ?? []).map((e) => ({ ...emptyExpense(raw.currency ?? 'BRL'), ...e })),
+    documents: (raw.documents ?? []).map((d) => ({ ...emptyDocument(), ...d })),
   } as Trip;
 }
 

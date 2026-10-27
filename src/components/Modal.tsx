@@ -11,10 +11,22 @@ interface ModalProps {
   submitLabel?: string;
   footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg';
+  /** Desabilita os botões enquanto o envio está em andamento. */
+  busy?: boolean;
 }
 
 /** Modal baseado no <dialog> nativo (foco, Esc e acessibilidade de graça). No celular vira "bottom sheet". */
-export function Modal({ open, title, onClose, children, onSubmit, submitLabel = 'Salvar', footer, size = 'md' }: ModalProps) {
+export function Modal({
+  open,
+  title,
+  onClose,
+  children,
+  onSubmit,
+  submitLabel = 'Salvar',
+  footer,
+  size = 'md',
+  busy = false,
+}: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -35,14 +47,14 @@ export function Modal({ open, title, onClose, children, onSubmit, submitLabel = 
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    onSubmit?.();
+    if (!busy) onSubmit?.();
   };
 
   const body = (
     <>
       <header className="modal__header">
         <h2 className="modal__title">{title}</h2>
-        <button type="button" className="icon-btn" onClick={onClose} aria-label="Fechar">
+        <button type="button" className="icon-btn" onClick={onClose} aria-label="Fechar" disabled={busy}>
           <X size={18} />
         </button>
       </header>
@@ -51,11 +63,11 @@ export function Modal({ open, title, onClose, children, onSubmit, submitLabel = 
         <footer className="modal__footer">
           {footer ?? (
             <>
-              <button type="button" className="btn btn--ghost" onClick={onClose}>
+              <button type="button" className="btn btn--ghost" onClick={onClose} disabled={busy}>
                 Cancelar
               </button>
-              <button type="submit" className="btn btn--primary">
-                {submitLabel}
+              <button type="submit" className="btn btn--primary" disabled={busy}>
+                {busy ? 'Salvando…' : submitLabel}
               </button>
             </>
           )}
@@ -70,11 +82,11 @@ export function Modal({ open, title, onClose, children, onSubmit, submitLabel = 
       className={`modal modal--${size}`}
       onCancel={(e) => {
         e.preventDefault();
-        onClose();
+        if (!busy) onClose();
       }}
       onMouseDown={(e) => {
         // Clique no fundo escuro fecha.
-        if (e.target === ref.current) onClose();
+        if (e.target === ref.current && !busy) onClose();
       }}
     >
       {onSubmit ? (

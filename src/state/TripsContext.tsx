@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { getTripRepository, type StorageKind, type TripRepository } from '../data';
+import { getTripRepository, type FileStore, type StorageKind, type TripRepository } from '../data';
 import { createTrip } from '../domain/factories';
 import type { ID, Trip, TripDraft } from '../domain/types';
 import { useToast } from '../components/Toast';
@@ -9,6 +9,8 @@ interface TripsContextValue {
   loading: boolean;
   /** Onde os dados estão sendo guardados (conta no claude.ai ou navegador). */
   storage: StorageKind | null;
+  /** Armazenamento dos anexos da aba Docs (null enquanto carrega). */
+  files: FileStore | null;
   addTrip(draft: TripDraft): Promise<Trip | null>;
   /** Aplica uma alteração imutável na viagem e persiste. */
   updateTrip(id: ID, updater: (trip: Trip) => Trip): Promise<boolean>;
@@ -21,6 +23,7 @@ const TripsContext = createContext<TripsContextValue | null>(null);
 export function TripsProvider({ children }: { children: ReactNode }) {
   const [repository, setRepository] = useState<TripRepository | null>(null);
   const [storage, setStorage] = useState<StorageKind | null>(null);
+  const [files, setFiles] = useState<FileStore | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const tripsRef = useRef<Trip[]>([]);
@@ -32,8 +35,9 @@ export function TripsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    void getTripRepository().then(({ repository, kind }) => {
+    void getTripRepository().then(({ repository, files, kind }) => {
       setRepository(repository);
+      setFiles(files);
       setStorage(kind);
     });
   }, []);
@@ -112,28 +116,36 @@ export function TripsProvider({ children }: { children: ReactNode }) {
   const deleteTrip = useCallback<TripsContextValue['deleteTrip']>(
     async (id) => {
       if (!repository) return;
+      const documents = tripsRef.current.find((t) => t.id === id)?.documents ?? [];
       try {
         await repository.remove(id);
         commit(tripsRef.current.filter((t) => t.id !== id));
       } catch (error) {
         reportError(error);
+        return;
       }
+      // Remove também os anexos da aba Docs, para não ocupar espaço à toa.
+      for (const doc of documents) if (doc.file) await files?.remove(doc.file).catch(() => undefined);
     },
-    [commit, reportError, repository],
+    [commit, files, reportError, repository],
   );
 
   const replaceAll = useCallback<TripsContextValue['replaceAll']>(
     async (next) => {
       if (!repository) return;
+      const keep = new Set(next.flatMap((t) => t.documents ?? []).map((d) => d.file?.id));
+      const dropped = tripsRef.current.flatMap((t) => t.documents).filter((d) => d.file && !keep.has(d.file.id));
       await repository.replaceAll(next);
       await reload();
+      // Arquivos de documentos que não existem mais no backup restaurado.
+      for (const doc of dropped) if (doc.file) await files?.remove(doc.file).catch(() => undefined);
     },
-    [reload, repository],
+    [files, reload, repository],
   );
 
   const value = useMemo(
-    () => ({ trips, loading, storage, addTrip, updateTrip, deleteTrip, replaceAll }),
-    [trips, loading, storage, addTrip, updateTrip, deleteTrip, replaceAll],
+    () => ({ trips, loading, storage, files, addTrip, updateTrip, deleteTrip, replaceAll }),
+    [trips, loading, storage, files, addTrip, updateTrip, deleteTrip, replaceAll],
   );
 
   return <TripsContext.Provider value={value}>{children}</TripsContext.Provider>;
