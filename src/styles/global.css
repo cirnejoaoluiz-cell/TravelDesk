@@ -25,6 +25,19 @@
   --success-soft: #e2f0e7;
   --info: #3a5a8c;
   --info-soft: #e5ebf5;
+  --warning-ink: #7a4c10;
+  --on-ink: #ffffff;
+  --on-accent: #ffffff;
+  --ink-hover: #000000;
+  --danger-hover: #98351f;
+  --bg-translucent: rgba(246, 245, 242, 0.88);
+  --surface-translucent: rgba(255, 255, 255, 0.5);
+  --backdrop: rgba(20, 22, 21, 0.42);
+  /* Elementos sobre fotos/capas: iguais nos dois temas. */
+  --on-image: #ffffff;
+  --on-image-ink: #1a1c1b;
+  --on-image-success: #2c7650;
+  --on-image-muted: #565b58;
 
   --radius-sm: 8px;
   --radius: 12px;
@@ -39,6 +52,81 @@
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   color-scheme: light;
+}
+
+/* Tema escuro: mesmos tokens, valores noturnos. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #121514;
+    --surface: #1a1e1c;
+    --surface-2: #222725;
+    --surface-3: #2b312e;
+    --border: #2b312e;
+    --border-strong: #3a423e;
+    --ink: #eef0ee;
+    --ink-2: #b2b9b5;
+    --ink-3: #828a86;
+    --accent: #7cc2ad;
+    --accent-hover: #93d0bd;
+    --accent-soft: #1f3530;
+    --accent-ink: #9fd6c4;
+    --danger: #ec7d68;
+    --danger-soft: #3a211c;
+    --warning: #e2a85a;
+    --warning-soft: #352a19;
+    --success: #74c69a;
+    --success-soft: #1b3226;
+    --info: #93b0e0;
+    --info-soft: #1e2a3d;
+    --warning-ink: #f0c98f;
+    --on-ink: #121514;
+    --on-accent: #0f1f1a;
+    --ink-hover: #ffffff;
+    --danger-hover: #f39582;
+    --bg-translucent: rgba(18, 21, 20, 0.86);
+    --surface-translucent: rgba(26, 30, 28, 0.6);
+    --backdrop: rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px -8px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #121514;
+  --surface: #1a1e1c;
+  --surface-2: #222725;
+  --surface-3: #2b312e;
+  --border: #2b312e;
+  --border-strong: #3a423e;
+  --ink: #eef0ee;
+  --ink-2: #b2b9b5;
+  --ink-3: #828a86;
+  --accent: #7cc2ad;
+  --accent-hover: #93d0bd;
+  --accent-soft: #1f3530;
+  --accent-ink: #9fd6c4;
+  --danger: #ec7d68;
+  --danger-soft: #3a211c;
+  --warning: #e2a85a;
+  --warning-soft: #352a19;
+  --success: #74c69a;
+  --success-soft: #1b3226;
+  --info: #93b0e0;
+  --info-soft: #1e2a3d;
+  --warning-ink: #f0c98f;
+  --on-ink: #121514;
+  --on-accent: #0f1f1a;
+  --ink-hover: #ffffff;
+  --danger-hover: #f39582;
+  --bg-translucent: rgba(18, 21, 20, 0.86);
+  --surface-translucent: rgba(26, 30, 28, 0.6);
+  --backdrop: rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px -8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
 }
 
 @media (max-width: 640px) {
@@ -69,6 +157,16 @@ body {
   font-feature-settings: 'cv11', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pinta a faixa da área segura acima das abas fixas (iPhone/iPad em tela cheia). */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--bg);
 }
 
 body.no-scroll {
@@ -117,8 +215,8 @@ button:disabled {
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
-  padding-left: var(--gutter);
-  padding-right: var(--gutter);
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
 .muted {
@@ -163,12 +261,12 @@ button:disabled {
 
 .btn--primary {
   background: var(--ink);
-  color: #fff;
+  color: var(--on-ink);
   box-shadow: var(--shadow-sm);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #000;
+  background: var(--ink-hover);
 }
 
 .btn--ghost {
@@ -184,17 +282,17 @@ button:disabled {
 
 .btn--danger {
   background: var(--danger);
-  color: #fff;
+  color: var(--on-ink);
 }
 
 .btn--danger:hover {
-  background: #98351f;
+  background: var(--danger-hover);
 }
 
 .btn--glass {
   background: rgba(255, 255, 255, 0.18);
   border-color: rgba(255, 255, 255, 0.28);
-  color: #fff;
+  color: var(--on-image);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -403,7 +501,7 @@ input[type='time'].input {
 }
 
 .tag button:hover {
-  background: rgba(31, 77, 67, 0.12);
+  background: var(--surface-3);
 }
 
 .checkbox {
@@ -435,8 +533,8 @@ input[type='time'].input {
   content: '';
   width: 10px;
   height: 6px;
-  border-left: 2px solid #fff;
-  border-bottom: 2px solid #fff;
+  border-left: 2px solid var(--on-accent);
+  border-bottom: 2px solid var(--on-accent);
   transform: translateY(-1px) rotate(-45deg);
 }
 
@@ -533,7 +631,7 @@ input[type='time'].input {
 }
 
 .modal::backdrop {
-  background: rgba(20, 22, 21, 0.42);
+  background: var(--backdrop);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   animation: fade-in 0.2s var(--ease);
@@ -688,7 +786,7 @@ input[type='time'].input {
 }
 
 .menu--light .icon-btn {
-  color: #fff;
+  color: var(--on-image);
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(10px);
@@ -696,7 +794,7 @@ input[type='time'].input {
 
 .menu--light .icon-btn:hover {
   background: rgba(255, 255, 255, 0.3);
-  color: #fff;
+  color: var(--on-image);
 }
 
 /* ---------------------------------------------------------------- Toast */
@@ -723,7 +821,7 @@ input[type='time'].input {
   padding: 10px 16px;
   border-radius: 999px;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-ink);
   font-size: 14px;
   font-weight: 500;
   box-shadow: var(--shadow-lg);
@@ -757,18 +855,18 @@ input[type='time'].input {
 
 .badge--glass {
   background: rgba(255, 255, 255, 0.88);
-  color: var(--ink);
+  color: var(--on-image-ink);
   backdrop-filter: blur(8px);
 }
 
 .badge--ongoing {
-  background: #fff;
-  color: var(--success);
+  background: #ffffff;
+  color: var(--on-image-success);
 }
 
 .badge--past {
   background: rgba(255, 255, 255, 0.7);
-  color: var(--ink-2);
+  color: var(--on-image-muted);
 }
 
 .pill {
@@ -817,7 +915,7 @@ input[type='time'].input {
 .chip.is-active {
   background: var(--ink);
   border-color: var(--ink);
-  color: #fff;
+  color: var(--on-ink);
 }
 
 .progress {
@@ -854,7 +952,7 @@ input[type='time'].input {
   padding: 56px 24px;
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--surface-translucent);
 }
 
 .empty__icon {
@@ -890,7 +988,7 @@ input[type='time'].input {
   padding: 12px 14px;
   border-radius: var(--radius);
   background: var(--warning-soft);
-  color: #7a4c10;
+  color: var(--warning-ink);
   font-size: 13.5px;
 }
 
@@ -912,7 +1010,7 @@ input[type='time'].input {
 }
 
 .back-link--light:hover {
-  color: #fff;
+  color: var(--on-image);
 }
 
 /* ---------------------------------------------------------------- Layout */
@@ -1021,7 +1119,7 @@ input[type='time'].input {
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border);
   overflow: hidden;
   transition:
     transform 0.25s var(--ease),
@@ -1030,7 +1128,7 @@ input[type='time'].input {
 
 .trip-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 2px 4px rgba(26, 28, 27, 0.04), 0 18px 40px -16px rgba(26, 28, 27, 0.28);
+  box-shadow: var(--shadow-lg);
 }
 
 .trip-card__link {
@@ -1089,12 +1187,12 @@ input[type='time'].input {
 
 .trip-card__menu > .menu > .icon-btn {
   background: rgba(255, 255, 255, 0.88);
-  color: var(--ink);
+  color: var(--on-image-ink);
   backdrop-filter: blur(8px);
 }
 
 .trip-card__menu > .menu > .icon-btn:hover {
-  background: #fff;
+  background: #ffffff;
 }
 
 /* Cover picker (form) */
@@ -1157,7 +1255,7 @@ input[type='time'].input {
 
 .trip-hero {
   position: relative;
-  color: #fff;
+  color: var(--on-image);
   background-size: cover !important;
   background-position: center !important;
 }
@@ -1255,9 +1353,9 @@ input[type='time'].input {
 
 .tabs {
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   z-index: 10;
-  background: rgba(246, 245, 242, 0.88);
+  background: var(--bg-translucent);
   backdrop-filter: saturate(1.6) blur(14px);
   -webkit-backdrop-filter: saturate(1.6) blur(14px);
   border-bottom: 1px solid var(--border);
@@ -1317,7 +1415,7 @@ input[type='time'].input {
 
 .tab--active .tab__count {
   background: var(--ink);
-  color: #fff;
+  color: var(--on-ink);
 }
 
 @media (max-width: 640px) {
@@ -2072,5 +2170,14 @@ input[type='time'].input {
 
   .expense > .menu {
     grid-area: menu;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

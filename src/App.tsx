@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { HashRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ConfirmProvider } from './components/Confirm';
 import { ToastProvider } from './components/Toast';
 import { BackupControls } from './features/backup/BackupControls';
 import { TripPage } from './features/trip/TripPage';
 import { TripsPage } from './features/trips/TripsPage';
-import { TripsProvider } from './state/TripsContext';
+import { TripsProvider, useTrips } from './state/TripsContext';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -17,10 +17,23 @@ function ScrollToTop() {
   return null;
 }
 
+// HashRouter: funciona em qualquer hospedagem estática sem configurar o servidor.
+// Publicado no claude.ai a navegação fica em memória (a página não controla a URL).
+const Router = import.meta.env.VITE_TARGET === 'artifact' ? MemoryRouter : HashRouter;
+
+function StorageNote() {
+  const { storage } = useTrips();
+  if (!storage) return <span>TravelDesk</span>;
+  return (
+    <span>
+      TravelDesk · {storage === 'account' ? 'dados salvos na sua conta Claude' : 'dados salvos neste navegador'}
+    </span>
+  );
+}
+
 export function App() {
   return (
-    // HashRouter: funciona em qualquer hospedagem estática sem configurar o servidor.
-    <HashRouter>
+    <Router>
       <ToastProvider>
         <ConfirmProvider>
           <TripsProvider>
@@ -34,12 +47,12 @@ export function App() {
               </Routes>
             </main>
             <footer className="app-footer container">
-              <span>TravelDesk · dados salvos neste navegador</span>
+              <StorageNote />
               <BackupControls />
             </footer>
           </TripsProvider>
         </ConfirmProvider>
       </ToastProvider>
-    </HashRouter>
+    </Router>
   );
 }

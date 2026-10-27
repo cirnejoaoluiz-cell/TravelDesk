@@ -4,6 +4,7 @@ import { useConfirm } from '../../components/Confirm';
 import { useToast } from '../../components/Toast';
 import type { Trip } from '../../domain/types';
 import { todayISO } from '../../lib/dates';
+import { useCapability } from '../../platform/claude';
 import { useTrips } from '../../state/TripsContext';
 
 /** Exportar/importar todos os dados em JSON — cópia de segurança enquanto os dados vivem só no navegador. */
@@ -13,14 +14,23 @@ export function BackupControls() {
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const exportData = () => {
-    const blob = new Blob([JSON.stringify({ app: 'TravelDesk', version: 1, exportedAt: new Date().toISOString(), trips }, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
+  const exportData = async () => {
+    const json = JSON.stringify({ app: 'TravelDesk', version: 1, exportedAt: new Date().toISOString(), trips }, null, 2);
+    const filename = `traveldesk-backup-${todayISO()}.json`;
+    // No claude.ai o download passa pela confirmação da plataforma.
+    const downloads = await useCapability('downloads');
+    if (downloads) {
+      try {
+        await downloads.save({ filename, data: json });
+      } catch (error) {
+        if ((error as { code?: string }).code !== 'declined') toast.show('Não foi possível exportar o backup aqui.', 'error');
+      }
+      return;
+    }
+    const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `traveldesk-backup-${todayISO()}.json`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -45,7 +55,7 @@ export function BackupControls() {
 
   return (
     <div className="backup">
-      <button className="link-btn" onClick={exportData} disabled={!trips.length}>
+      <button className="link-btn" onClick={() => void exportData()} disabled={!trips.length}>
         <Download size={14} /> Exportar backup
       </button>
       <button className="link-btn" onClick={() => fileRef.current?.click()}>

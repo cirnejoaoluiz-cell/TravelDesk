@@ -45,10 +45,17 @@ export function CopyCode({ code }: { code: string }) {
       className="code-chip"
       title="Copiar localizador"
       onClick={() => {
-        void navigator.clipboard?.writeText(code).then(() => {
-          setCopied(true);
-          window.setTimeout(() => setCopied(false), 1500);
-        });
+        navigator.clipboard
+          ?.writeText(code)
+          .then(() => {
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1500);
+          })
+          .catch(() => {
+            // Sem acesso à área de transferência: seleciona o código para cópia manual.
+            const node = document.activeElement?.querySelector('.code-chip__value');
+            if (node) window.getSelection()?.selectAllChildren(node);
+          });
       }}
     >
       <span className="code-chip__label">Localizador</span>

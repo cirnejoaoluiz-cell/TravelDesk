@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { tripRepository, type TripRepository } from '../data';
+import { getTripRepository, type StorageKind, type TripRepository } from '../data';
 import { createTrip } from '../domain/factories';
 import type { ID, Trip, TripDraft } from '../domain/types';
 import { useToast } from '../components/Toast';
@@ -7,6 +7,8 @@ import { useToast } from '../components/Toast';
 interface TripsContextValue {
   trips: Trip[];
   loading: boolean;
+  /** Onde os dados estão sendo guardados (conta no claude.ai ou navegador). */
+  storage: StorageKind | null;
   addTrip(draft: TripDraft): Promise<Trip | null>;
   /** Aplica uma alteração imutável na viagem e persiste. */
   updateTrip(id: ID, updater: (trip: Trip) => Trip): Promise<boolean>;
@@ -16,13 +18,9 @@ interface TripsContextValue {
 
 const TripsContext = createContext<TripsContextValue | null>(null);
 
-export function TripsProvider({
-  children,
-  repository = tripRepository,
-}: {
-  children: ReactNode;
-  repository?: TripRepository;
-}) {
+export function TripsProvider({ children }: { children: ReactNode }) {
+  const [repository, setRepository] = useState<TripRepository | null>(null);
+  const [storage, setStorage] = useState<StorageKind | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const tripsRef = useRef<Trip[]>([]);
@@ -33,17 +31,35 @@ export function TripsProvider({
     setTrips(next);
   }, []);
 
+  useEffect(() => {
+    void getTripRepository().then(({ repository, kind }) => {
+      setRepository(repository);
+      setStorage(kind);
+    });
+  }, []);
+
   const reload = useCallback(async () => {
-    commit(await repository.list());
-    setLoading(false);
+    if (!repository) return;
+    try {
+      commit(await repository.list());
+    } catch (error) {
+      reportErrorRef.current(error);
+    } finally {
+      setLoading(false);
+    }
   }, [commit, repository]);
 
   useEffect(() => {
     void reload();
-    // Mantém abas do navegador sincronizadas quando os dados mudam em outra aba.
+    // Busca alterações feitas em outra aba ou em outro dispositivo ao voltar para a página.
     const onStorage = () => void reload();
+    const onVisible = () => document.visibilityState === 'visible' && void reload();
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [reload]);
 
   const reportError = useCallback(
@@ -53,9 +69,12 @@ export function TripsProvider({
     },
     [toast],
   );
+  const reportErrorRef = useRef(reportError);
+  reportErrorRef.current = reportError;
 
   const addTrip = useCallback<TripsContextValue['addTrip']>(
     async (draft) => {
+      if (!repository) return null;
       try {
         const saved = await repository.save(createTrip(draft));
         commit([...tripsRef.current, saved]);
@@ -70,6 +89,7 @@ export function TripsProvider({
 
   const updateTrip = useCallback<TripsContextValue['updateTrip']>(
     async (id, updater) => {
+      if (!repository) return false;
       const previous = tripsRef.current;
       const current = previous.find((t) => t.id === id);
       if (!current) return false;
@@ -91,6 +111,7 @@ export function TripsProvider({
 
   const deleteTrip = useCallback<TripsContextValue['deleteTrip']>(
     async (id) => {
+      if (!repository) return;
       try {
         await repository.remove(id);
         commit(tripsRef.current.filter((t) => t.id !== id));
@@ -103,6 +124,7 @@ export function TripsProvider({
 
   const replaceAll = useCallback<TripsContextValue['replaceAll']>(
     async (next) => {
+      if (!repository) return;
       await repository.replaceAll(next);
       await reload();
     },
@@ -110,8 +132,8 @@ export function TripsProvider({
   );
 
   const value = useMemo(
-    () => ({ trips, loading, addTrip, updateTrip, deleteTrip, replaceAll }),
-    [trips, loading, addTrip, updateTrip, deleteTrip, replaceAll],
+    () => ({ trips, loading, storage, addTrip, updateTrip, deleteTrip, replaceAll }),
+    [trips, loading, storage, addTrip, updateTrip, deleteTrip, replaceAll],
   );
 
   return <TripsContext.Provider value={value}>{children}</TripsContext.Provider>;
