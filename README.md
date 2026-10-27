@@ -2,6 +2,14 @@
 
 Organizador pessoal de viagens: cadastre suas viagens e organize, para cada uma, **itinerário**, **roteiro**, **checklist** e **financeiro**.
 
+## Site
+
+**https://cirnejoaoluiz-cell.github.io/TravelDesk/**
+
+Publicado automaticamente pelo GitHub Pages (`.github/workflows/deploy.yml`) a cada alteração no branch principal: o fluxo roda os testes, gera a versão de produção e publica.
+
+No iPad/iPhone, abra o site no Safari → Compartilhar → **Adicionar à Tela de Início**. O TravelDesk abre como um app e o Safari deixa de apagar os dados do site após dias sem uso.
+
 ## Como executar
 
 Requisitos: [Node.js](https://nodejs.org) 20 ou superior.

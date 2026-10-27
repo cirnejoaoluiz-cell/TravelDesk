@@ -24,6 +24,8 @@ export function getTripRepository(): Promise<ResolvedRepository> {
     const [db, user] = await Promise.all([useCapability('db'), useCapability('user')]);
     const userId = user ? await user.id().catch(() => null) : null;
     if (db && userId) return { repository: new ClaudeDbTripRepository(db, userId), kind: 'account' as const };
+    // Pede ao navegador para não apagar os dados automaticamente por falta de espaço ou inatividade.
+    void navigator.storage?.persist?.().catch(() => undefined);
     return { repository: new LocalStorageTripRepository(), kind: 'browser' as const };
   })();
   return resolved;
