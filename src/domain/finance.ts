@@ -83,3 +83,8 @@ export function summarizeFinances(trip: Pick<Trip, 'expenses' | 'budget' | 'curr
     })),
   };
 }
+
+/** Ordem de exibição das despesas: mais recentes primeiro (sem data por último). */
+export function sortExpenses(expenses: Expense[]): Expense[] {
+  return [...expenses].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}

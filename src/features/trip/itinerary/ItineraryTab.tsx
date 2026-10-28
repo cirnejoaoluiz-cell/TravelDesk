@@ -11,29 +11,15 @@ import { ITINERARY_ICONS } from '../icons';
 import { AddressLink, CopyCode, ExternalAnchor, TabHeader } from '../shared';
 import type { TabProps } from '../types';
 import { ItineraryFormModal } from './ItineraryFormModal';
-
-export function itineraryTitle(item: ItineraryItem) {
-  if (item.title) return item.title;
-  if (item.origin || item.destination) return [item.origin, item.destination].filter(Boolean).join(' → ');
-  return ITINERARY_TYPES[item.type].label;
-}
-
-const sortKey = (i: ItineraryItem) => `${i.startDate || '9999'}T${i.startTime || '99:99'}`;
+import { ExportPdfButton } from '../pdf/ExportPdfButton';
+import { groupItineraryByDate, itineraryTitle } from './itineraryOps';
 
 export function ItineraryTab({ trip, update }: TabProps) {
   const [editing, setEditing] = useState<ItineraryItem | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const confirm = useConfirm();
 
-  const groups = useMemo(() => {
-    const sorted = [...trip.itinerary].sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
-    const map = new Map<string, ItineraryItem[]>();
-    for (const item of sorted) {
-      const key = item.startDate || '';
-      map.set(key, [...(map.get(key) ?? []), item]);
-    }
-    return [...map.entries()];
-  }, [trip.itinerary]);
+  const groups = useMemo(() => groupItineraryByDate(trip.itinerary), [trip.itinerary]);
 
   const openForm = (item: ItineraryItem | null) => {
     setEditing(item);
@@ -81,6 +67,8 @@ export function ItineraryTab({ trip, update }: TabProps) {
           ))}
         </div>
       )}
+
+      <ExportPdfButton trip={trip} section="itinerary" />
 
       <ItineraryFormModal
         open={formOpen}

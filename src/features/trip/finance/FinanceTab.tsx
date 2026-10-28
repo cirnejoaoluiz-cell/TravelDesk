@@ -5,7 +5,7 @@ import { Menu, type MenuAction } from '../../../components/Menu';
 import { ProgressBar } from '../../../components/ProgressBar';
 import { useConfirm } from '../../../components/Confirm';
 import { EXPENSE_CATEGORIES, EXPENSE_STATUSES } from '../../../domain/catalog';
-import { conversionRate, paidPortion, summarizeFinances } from '../../../domain/finance';
+import { conversionRate, paidPortion, sortExpenses, summarizeFinances } from '../../../domain/finance';
 import type { Expense, ExpenseStatus } from '../../../domain/types';
 import { removeById, upsertById } from '../../../lib/collections';
 import { formatDate } from '../../../lib/dates';
@@ -13,6 +13,7 @@ import { formatMoney } from '../../../lib/money';
 import { TabHeader } from '../shared';
 import type { TabProps } from '../types';
 import { ExpenseFormModal } from './ExpenseFormModal';
+import { ExportPdfButton } from '../pdf/ExportPdfButton';
 
 type StatusFilter = 'all' | ExpenseStatus;
 
@@ -25,9 +26,7 @@ export function FinanceTab({ trip, update }: TabProps) {
 
   const expenses = useMemo(
     () =>
-      trip.expenses
-        .filter((e) => filter === 'all' || e.status === filter)
-        .sort((a, b) => (b.date || '').localeCompare(a.date || '')),
+      sortExpenses(trip.expenses.filter((e) => filter === 'all' || e.status === filter)),
     [trip.expenses, filter],
   );
 
@@ -191,6 +190,8 @@ export function FinanceTab({ trip, update }: TabProps) {
           </ul>
         </>
       )}
+
+      <ExportPdfButton trip={trip} section="finance" />
 
       <ExpenseFormModal
         open={form.open}

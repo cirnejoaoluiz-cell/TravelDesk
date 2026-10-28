@@ -49,3 +49,25 @@ export function sortDayByTime(activities: Activity[], date: string): Activity[] 
   const orders = new Map(sorted.map((a, index) => [a.id, index]));
   return activities.map((a) => (orders.has(a.id) ? { ...a, order: orders.get(a.id)! } : a));
 }
+
+export interface ScheduleDay {
+  /** '' = atividades sem dia definido (sempre por último). */
+  date: string;
+  items: Activity[];
+}
+
+/**
+ * Agrupa por dia, preservando a ordem definida pelo usuário dentro de cada dia.
+ * `tripDays` entram mesmo sem atividades quando `includeEmptyTripDays` é verdadeiro.
+ */
+export function groupActivitiesByDay(activities: Activity[], tripDays: string[], includeEmptyTripDays: boolean): ScheduleDay[] {
+  const keys = new Set<string>(includeEmptyTripDays ? tripDays : []);
+  activities.forEach((a) => a.date && keys.add(a.date));
+  const list = [...keys].sort().map((date) => ({
+    date,
+    items: activities.filter((a) => a.date === date).sort((a, b) => a.order - b.order),
+  }));
+  const undated = activities.filter((a) => !a.date).sort((a, b) => a.order - b.order);
+  if (undated.length) list.push({ date: '', items: undated });
+  return list;
+}

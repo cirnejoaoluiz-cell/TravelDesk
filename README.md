@@ -106,5 +106,6 @@ A chave do `localStorage` guarda um `version`; mudanças futuras de formato pode
 - **Itinerário**: voos, trens, ônibus, carros, barcos e hospedagens, com datas, horários, endereço (abre no mapa), localizador (copiar com um toque), link e observações. Ordem cronológica, agrupado por dia.
 - **Roteiro**: atividades por dia (gerados a partir das datas da viagem) e por cidade (filtro), com categoria, horário, endereço, link e notas; marcar como concluída, reordenar (↑/↓) ou ordenar por horário.
 - **Checklist**: tarefas com prazo opcional, destaque para atrasadas e próximas, progresso geral e lista de sugestões.
+- **Exportar em PDF** (Itinerário, Roteiro e Financeiro): botão “PDF” no fim da aba gera um resumo A4 só daquela aba, com cabeçalho, data de geração e páginas numeradas. Feito no navegador com jsPDF + jspdf-autotable e a fonte Inter embutida (`src/features/trip/pdf/`); nenhum dado sai do aparelho.
 - **Docs**: PDFs e imagens da viagem (passagens, hospedagem, seguro, ingressos, documentos pessoais), com visualização, download, edição e exclusão.
 - **Financeiro**: despesas com categoria, valor, moeda, data e status (pago, pendente, parcelado com controle de parcelas); totais de registrado/pago/pendente, comparação com o orçamento e distribuição por categoria. Despesas em outra moeda entram nos totais quando você informa a cotação.

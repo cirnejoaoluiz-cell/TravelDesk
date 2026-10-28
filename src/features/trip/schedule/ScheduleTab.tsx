@@ -11,7 +11,8 @@ import { ACTIVITY_ICONS } from '../icons';
 import { AddressLink, ExternalAnchor, TabHeader } from '../shared';
 import type { TabProps } from '../types';
 import { ActivityFormModal } from './ActivityFormModal';
-import { moveActivity, saveActivity, sortDayByTime } from './scheduleOps';
+import { ExportPdfButton } from '../pdf/ExportPdfButton';
+import { groupActivitiesByDay, moveActivity, saveActivity, sortDayByTime } from './scheduleOps';
 
 export function ScheduleTab({ trip, update }: TabProps) {
   const [cityFilter, setCityFilter] = useState('');
@@ -41,17 +42,7 @@ export function ScheduleTab({ trip, update }: TabProps) {
   );
   const visibleIds = useMemo(() => new Set(visible.map((a) => a.id)), [visible]);
 
-  const days = useMemo(() => {
-    const keys = new Set<string>(cityFilter ? [] : tripDays);
-    visible.forEach((a) => a.date && keys.add(a.date));
-    const list = [...keys].sort().map((date) => ({
-      date,
-      items: visible.filter((a) => a.date === date).sort((a, b) => a.order - b.order),
-    }));
-    const undated = visible.filter((a) => !a.date).sort((a, b) => a.order - b.order);
-    if (undated.length) list.push({ date: '', items: undated });
-    return list;
-  }, [visible, tripDays, cityFilter]);
+  const days = useMemo(() => groupActivitiesByDay(visible, tripDays, !cityFilter), [visible, tripDays, cityFilter]);
 
   const done = trip.activities.filter((a) => a.done).length;
 
@@ -174,6 +165,8 @@ export function ScheduleTab({ trip, update }: TabProps) {
           })}
         </div>
       )}
+
+      <ExportPdfButton trip={trip} section="schedule" />
 
       <ActivityFormModal
         open={form.open}
