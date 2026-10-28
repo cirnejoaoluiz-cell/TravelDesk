@@ -13,6 +13,7 @@ import { formatMoney } from '../../../lib/money';
 import { TabHeader } from '../shared';
 import type { TabProps } from '../types';
 import { ExpenseFormModal } from './ExpenseFormModal';
+import { tripCities } from '../../../domain/destinations';
 import { ExportPdfButton } from '../pdf/ExportPdfButton';
 
 type StatusFilter = 'all' | ExpenseStatus;
@@ -164,6 +165,7 @@ export function FinanceTab({ trip, update }: TabProps) {
                     <span className="expense__title">{expense.description}</span>
                     <span className="expense__meta">
                       {EXPENSE_CATEGORIES[expense.category]}
+                      {expense.city && <> · {expense.city}</>}
                       {expense.date && <> · {formatDate(expense.date)}</>}
                     </span>
                   </div>
@@ -197,6 +199,7 @@ export function FinanceTab({ trip, update }: TabProps) {
         open={form.open}
         initial={form.initial}
         tripCurrency={trip.currency}
+        cities={tripCities(trip)}
         onClose={() => setForm({ open: false, initial: null })}
         onSubmit={(e) => void save(e)}
       />

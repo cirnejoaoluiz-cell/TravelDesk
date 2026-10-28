@@ -11,6 +11,7 @@ import { ACTIVITY_ICONS } from '../icons';
 import { AddressLink, ExternalAnchor, TabHeader } from '../shared';
 import type { TabProps } from '../types';
 import { ActivityFormModal } from './ActivityFormModal';
+import { tripCities } from '../../../domain/destinations';
 import { ExportPdfButton } from '../pdf/ExportPdfButton';
 import { groupActivitiesByDay, moveActivity, saveActivity, sortDayByTime } from './scheduleOps';
 
@@ -31,10 +32,8 @@ export function ScheduleTab({ trip, update }: TabProps) {
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [trip.activities]);
 
-  const citySuggestions = useMemo(
-    () => [...new Set([...trip.destinations, ...cities])],
-    [trip.destinations, cities],
-  );
+  // Cidades cadastradas na viagem: única fonte para o menu de cidade do formulário.
+  const tripCityList = useMemo(() => tripCities(trip), [trip]);
 
   const visible = useMemo(
     () => (cityFilter ? trip.activities.filter((a) => a.city === cityFilter) : trip.activities),
@@ -47,7 +46,7 @@ export function ScheduleTab({ trip, update }: TabProps) {
   const done = trip.activities.filter((a) => a.done).length;
 
   const openNew = (date = '') =>
-    setForm({ open: true, initial: null, defaults: { date, city: cityFilter || trip.destinations[0] || '' } });
+    setForm({ open: true, initial: null, defaults: { date, city: cityFilter || tripCityList[0] || '' } });
 
   const setActivities = (fn: (list: Activity[]) => Activity[]) =>
     update((t) => ({ ...t, activities: fn(t.activities) }));
@@ -173,7 +172,7 @@ export function ScheduleTab({ trip, update }: TabProps) {
         initial={form.initial}
         defaults={form.defaults}
         days={tripDays}
-        cities={citySuggestions}
+        cities={tripCityList}
         onClose={() => setForm((f) => ({ ...f, open: false }))}
         onSubmit={(a) => void save(a)}
       />

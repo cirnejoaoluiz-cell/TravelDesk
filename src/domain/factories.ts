@@ -88,6 +88,7 @@ export function emptyExpense(currency: Expense['currency']): Expense {
     currency,
     exchangeRate: null,
     date: '',
+    city: '',
     status: 'pending',
     installments: 2,
     paidInstallments: 0,

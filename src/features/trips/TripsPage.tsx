@@ -9,6 +9,7 @@ import { tripPhase } from '../../lib/dates';
 import { useTrips } from '../../state/TripsContext';
 import { TripCard } from './TripCard';
 import { TripFormModal } from './TripFormModal';
+import { cityUsage } from '../../domain/destinations';
 
 type FormState = { mode: 'closed' } | { mode: 'create' } | { mode: 'edit'; trip: Trip };
 
@@ -115,6 +116,7 @@ export function TripsPage() {
       <TripFormModal
         open={form.mode !== 'closed'}
         initial={form.mode === 'edit' ? form.trip : undefined}
+        cityUsage={form.mode === 'edit' ? (city) => cityUsage(form.trip, city) : undefined}
         onClose={() => setForm({ mode: 'closed' })}
         onSubmit={handleSubmit}
       />

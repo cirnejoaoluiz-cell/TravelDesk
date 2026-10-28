@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CitySelect, NO_CITIES_HINT } from '../../../components/CitySelect';
 import { Modal } from '../../../components/Modal';
 import { Field, FieldRow, Select, TextArea, TextInput } from '../../../components/Field';
 import { ACTIVITY_CATEGORIES } from '../../../domain/catalog';
@@ -12,6 +13,7 @@ interface Props {
   initial: Activity | null;
   defaults: Partial<Activity>;
   days: string[];
+  /** Cidades da viagem atual (fonte única: `tripCities(trip)`). */
   cities: string[];
   onClose(): void;
   onSubmit(activity: Activity): void;
@@ -33,7 +35,7 @@ export function ActivityFormModal({ open, initial, defaults, days, cities, onClo
       setError('Dê um nome para a atividade.');
       return;
     }
-    onSubmit({ ...values, title: values.title.trim(), city: values.city.trim() });
+    onSubmit({ ...values, title: values.title.trim() });
   };
 
   // Dias fora do período da viagem (ex.: data antiga) continuam selecionáveis.
@@ -59,18 +61,8 @@ export function ActivityFormModal({ open, initial, defaults, days, cities, onClo
             ))}
           </Select>
         </Field>
-        <Field label="Cidade">
-          <TextInput
-            value={values.city}
-            onChange={(e) => setField('city', e.target.value)}
-            list="activity-cities"
-            placeholder="Ex.: Roma"
-          />
-          <datalist id="activity-cities">
-            {cities.map((c) => (
-              <option key={c} value={c} />
-            ))}
-          </datalist>
+        <Field label="Cidade" hint={cities.length ? undefined : NO_CITIES_HINT}>
+          <CitySelect cities={cities} value={values.city} onChange={(v) => setField('city', v)} emptyLabel="Sem cidade definida" />
         </Field>
       </FieldRow>
 

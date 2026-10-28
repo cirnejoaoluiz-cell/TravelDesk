@@ -13,6 +13,7 @@ import type { TabProps } from '../types';
 import { ItineraryFormModal } from './ItineraryFormModal';
 import { ExportPdfButton } from '../pdf/ExportPdfButton';
 import { groupItineraryByDate, itineraryTitle } from './itineraryOps';
+import { tripCities } from '../../../domain/destinations';
 
 export function ItineraryTab({ trip, update }: TabProps) {
   const [editing, setEditing] = useState<ItineraryItem | null>(null);
@@ -74,6 +75,7 @@ export function ItineraryTab({ trip, update }: TabProps) {
         open={formOpen}
         initial={editing}
         defaultDate={trip.startDate}
+        cities={tripCities(trip)}
         onClose={() => setFormOpen(false)}
         onSubmit={(item) => void save(item)}
       />

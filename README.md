@@ -78,6 +78,12 @@ Princípios:
 - **As telas nunca acessam o armazenamento diretamente**: tudo passa por `TripRepository`, que é assíncrono.
 - **Regras de negócio ficam em `domain/`**, testáveis sem interface.
 
+### Cidades da viagem
+
+A lista de cidades de cada viagem fica em `trip.destinations` (campo “Destinos” do formulário da viagem) e é a única fonte usada pelos menus de cidade do Itinerário (origem, destino, cidade da hospedagem), do Roteiro e do Financeiro. As regras ficam em `src/domain/destinations.ts` e o menu em `src/components/CitySelect.tsx`.
+
+Os registros guardam o nome da cidade escolhida. Se uma cidade sai da lista, nada é apagado: os registros mantêm a cidade, que aparece como “fora da lista da viagem” ao editar até que outra seja escolhida.
+
 ### Arquivos da aba Docs
 
 Os anexos (PDF e imagens, até 20 MB cada) não ficam dentro da viagem: a viagem guarda só uma referência (`StoredFile`) e o conteúdo vai para um armazenamento de arquivos (`src/data/files/FileStore.ts`):

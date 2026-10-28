@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CitySelect, NO_CITIES_HINT } from '../../../components/CitySelect';
 import { Modal } from '../../../components/Modal';
 import { Field, FieldRow, TextArea, TextInput } from '../../../components/Field';
 import { ITINERARY_TYPES } from '../../../domain/catalog';
@@ -11,11 +12,13 @@ interface Props {
   open: boolean;
   initial: ItineraryItem | null;
   defaultDate: string;
+  /** Cidades da viagem atual (fonte única: `tripCities(trip)`). */
+  cities: string[];
   onClose(): void;
   onSubmit(item: ItineraryItem): void;
 }
 
-export function ItineraryFormModal({ open, initial, defaultDate, onClose, onSubmit }: Props) {
+export function ItineraryFormModal({ open, initial, defaultDate, cities, onClose, onSubmit }: Props) {
   const { values, setField, setValues } = useFormState<ItineraryItem>(emptyItineraryItem());
   const [error, setError] = useState('');
 
@@ -31,14 +34,15 @@ export function ItineraryFormModal({ open, initial, defaultDate, onClose, onSubm
 
   const submit = () => {
     if (!values.title.trim() && !values.origin.trim() && !values.destination.trim()) {
-      setError(isLodging ? 'Informe o nome da hospedagem.' : 'Informe um título ou a origem/destino.');
+      setError(isLodging ? 'Informe o nome da hospedagem.' : 'Informe um título ou escolha a origem/destino.');
       return;
     }
     if (values.startDate && values.endDate && values.endDate < values.startDate) {
       setError('A data final precisa ser igual ou posterior à inicial.');
       return;
     }
-    onSubmit({ ...values, title: values.title.trim() });
+    // Hospedagem e outros não têm origem: não guarda um valor que ficou escondido ao trocar o tipo.
+    onSubmit({ ...values, title: values.title.trim(), origin: isTransport ? values.origin : '' });
   };
 
   const startLabel = isLodging ? 'Check-in' : isTransport ? 'Partida' : 'Início';
@@ -90,16 +94,26 @@ export function ItineraryFormModal({ open, initial, defaultDate, onClose, onSubm
 
       {isTransport ? (
         <FieldRow>
-          <Field label="Origem">
-            <TextInput value={values.origin} onChange={(e) => setField('origin', e.target.value)} placeholder="Ex.: São Paulo (GRU)" />
+          <Field label="Origem" hint={cities.length ? undefined : NO_CITIES_HINT}>
+            <CitySelect cities={cities} value={values.origin} onChange={(v) => setField('origin', v)} emptyLabel="Selecione a cidade" />
           </Field>
           <Field label="Destino">
-            <TextInput value={values.destination} onChange={(e) => setField('destination', e.target.value)} placeholder="Ex.: Roma (FCO)" />
+            <CitySelect
+              cities={cities}
+              value={values.destination}
+              onChange={(v) => setField('destination', v)}
+              emptyLabel="Selecione a cidade"
+            />
           </Field>
         </FieldRow>
       ) : (
-        <Field label="Cidade">
-          <TextInput value={values.destination} onChange={(e) => setField('destination', e.target.value)} placeholder="Ex.: Roma" />
+        <Field label="Cidade" hint={cities.length ? undefined : NO_CITIES_HINT}>
+          <CitySelect
+            cities={cities}
+            value={values.destination}
+            onChange={(v) => setField('destination', v)}
+            emptyLabel="Selecione a cidade"
+          />
         </Field>
       )}
 

@@ -87,7 +87,7 @@ export function buildFinancePdf(trip: Trip): Blob {
         {
           rich: parts(
             { text: e.description, bold: true },
-            { text: EXPENSE_CATEGORIES[e.category], tone: 'muted' },
+            { text: [EXPENSE_CATEGORIES[e.category], e.city].filter(Boolean).join(' · '), tone: 'muted' },
             e.notes && { text: e.notes, tone: 'faint' },
           ),
         },

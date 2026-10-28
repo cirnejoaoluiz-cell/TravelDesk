@@ -22,6 +22,7 @@ export type CurrencyCode = 'BRL' | 'USD' | 'EUR' | 'GBP' | 'ARS' | 'CLP' | 'JPY'
 export interface Trip {
   id: ID;
   name: string;
+  /** Cidades da viagem: fonte única usada pelos menus de cidade de todos os módulos (ver domain/destinations.ts). */
   destinations: string[];
   startDate: ISODate;
   endDate: ISODate;
@@ -56,9 +57,9 @@ export interface ItineraryItem {
   title: string;
   /** Companhia aérea, hotel, empresa de ônibus... */
   provider: string;
-  /** Origem (transporte) — para hospedagem fica vazio. */
+  /** Origem (transporte), escolhida entre as cidades da viagem — para hospedagem fica vazio. */
   origin: string;
-  /** Destino (transporte) ou cidade da hospedagem. */
+  /** Destino (transporte) ou cidade da hospedagem, escolhido entre as cidades da viagem. */
   destination: string;
   startDate: ISODate;
   startTime: TimeHM;
@@ -80,6 +81,7 @@ export interface Activity {
   category: ActivityCategory;
   /** Vazio = ainda sem dia definido. */
   date: ISODate;
+  /** Cidade da viagem, escolhida entre `trip.destinations`. */
   city: string;
   time: TimeHM;
   address: string;
@@ -127,6 +129,8 @@ export interface Expense {
    */
   exchangeRate: number | null;
   date: ISODate;
+  /** Cidade da viagem associada (opcional: '' = sem cidade específica). */
+  city: string;
   status: ExpenseStatus;
   installments: number;
   paidInstallments: number;

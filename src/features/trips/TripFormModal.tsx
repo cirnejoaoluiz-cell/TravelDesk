@@ -4,6 +4,7 @@ import { Modal } from '../../components/Modal';
 import { Field, FieldRow, Select, TextArea, TextInput } from '../../components/Field';
 import { TagInput } from '../../components/TagInput';
 import { CURRENCIES } from '../../domain/catalog';
+import { findTripCity, tripCities } from '../../domain/destinations';
 import { emptyTripDraft, toTripDraft } from '../../domain/factories';
 import type { CurrencyCode, TripDraft } from '../../domain/types';
 import { compressImage } from '../../lib/image';
@@ -13,11 +14,13 @@ import { useFormState } from '../../lib/useFormState';
 interface TripFormModalProps {
   open: boolean;
   initial?: TripDraft;
+  /** Quantos registros da viagem usam a cidade (para avisar ao removê-la da lista). */
+  cityUsage?(city: string): number;
   onClose(): void;
   onSubmit(draft: TripDraft): Promise<void> | void;
 }
 
-export function TripFormModal({ open, initial, onClose, onSubmit }: TripFormModalProps) {
+export function TripFormModal({ open, initial, cityUsage, onClose, onSubmit }: TripFormModalProps) {
   const isEdit = Boolean(initial);
   const { values, setField, setValues } = useFormState<TripDraft>(initial ?? emptyTripDraft());
   const [budgetText, setBudgetText] = useState('');
@@ -44,6 +47,12 @@ export function TripFormModal({ open, initial, onClose, onSubmit }: TripFormModa
       setImageError(error instanceof Error ? error.message : 'Imagem inválida.');
     }
   };
+
+  // Cidades retiradas da lista que ainda estão em registros desta viagem.
+  const removedInUse = (initial && cityUsage ? tripCities(initial) : [])
+    .filter((city) => !findTripCity(tripCities(values), city))
+    .map((city) => ({ city, count: cityUsage!(city) }))
+    .filter((c) => c.count > 0);
 
   const submit = async () => {
     const next: Record<string, string> = {};
@@ -113,7 +122,11 @@ export function TripFormModal({ open, initial, onClose, onSubmit }: TripFormModa
         />
       </Field>
 
-      <Field label="Destinos" group hint="Pressione Enter ou vírgula para adicionar mais de um.">
+      <Field
+        label="Destinos (cidades da viagem)"
+        group
+        hint="Pressione Enter ou vírgula para adicionar mais de uma. Essas cidades aparecem para seleção no Itinerário, no Roteiro e no Financeiro."
+      >
         <TagInput
           value={values.destinations}
           onChange={(v) => setField('destinations', v)}
@@ -121,6 +134,13 @@ export function TripFormModal({ open, initial, onClose, onSubmit }: TripFormModa
           ariaLabel="Destinos"
         />
       </Field>
+      {removedInUse.length > 0 && (
+        <p className="notice notice--compact">
+          {removedInUse.map(({ city, count }) => `${city} (${count} ${count === 1 ? 'registro' : 'registros'})`).join(', ')}{' '}
+          {removedInUse.length === 1 ? 'continua' : 'continuam'} em uso nesta viagem. Os registros não serão apagados: eles mantêm a
+          cidade, que passa a aparecer como “fora da lista da viagem” até você escolher outra.
+        </p>
+      )}
 
       <FieldRow>
         <Field label="Data de ida">

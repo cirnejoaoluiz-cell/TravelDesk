@@ -9,6 +9,7 @@ import { daysBetween, formatDateRange, relativeTripLabel, tripPhase } from '../.
 import { coverBackground } from '../../lib/cover';
 import { useTrip, useTrips } from '../../state/TripsContext';
 import { TripFormModal } from '../trips/TripFormModal';
+import { cityUsage } from '../../domain/destinations';
 import { ItineraryTab } from './itinerary/ItineraryTab';
 import { ScheduleTab } from './schedule/ScheduleTab';
 import { ChecklistTab } from './checklist/ChecklistTab';
@@ -145,7 +146,13 @@ export function TripPage() {
         {activeTab === 'docs' && <DocsTab trip={trip} update={update} />}
       </div>
 
-      <TripFormModal open={editing} initial={trip} onClose={() => setEditing(false)} onSubmit={handleEdit} />
+      <TripFormModal
+        open={editing}
+        initial={trip}
+        cityUsage={(city) => cityUsage(trip, city)}
+        onClose={() => setEditing(false)}
+        onSubmit={handleEdit}
+      />
     </div>
   );
 }

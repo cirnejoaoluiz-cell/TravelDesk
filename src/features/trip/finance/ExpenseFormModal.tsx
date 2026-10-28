@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CitySelect, NO_CITIES_HINT } from '../../../components/CitySelect';
 import { Modal } from '../../../components/Modal';
 import { Field, FieldRow, Select, TextArea, TextInput } from '../../../components/Field';
 import { CURRENCIES, EXPENSE_CATEGORIES, EXPENSE_STATUSES } from '../../../domain/catalog';
@@ -12,11 +13,13 @@ interface Props {
   open: boolean;
   initial: Expense | null;
   tripCurrency: CurrencyCode;
+  /** Cidades da viagem atual (fonte única: `tripCities(trip)`). */
+  cities: string[];
   onClose(): void;
   onSubmit(expense: Expense): void;
 }
 
-export function ExpenseFormModal({ open, initial, tripCurrency, onClose, onSubmit }: Props) {
+export function ExpenseFormModal({ open, initial, tripCurrency, cities, onClose, onSubmit }: Props) {
   const { values, setField, setValues } = useFormState<Expense>(emptyExpense(tripCurrency));
   const [amountText, setAmountText] = useState('');
   const [rateText, setRateText] = useState('');
@@ -112,26 +115,35 @@ export function ExpenseFormModal({ open, initial, tripCurrency, onClose, onSubmi
       )}
 
       <FieldRow>
+        <Field label="Cidade (opcional)" hint={cities.length ? undefined : NO_CITIES_HINT}>
+          <CitySelect
+            cities={cities}
+            value={values.city}
+            onChange={(v) => setField('city', v)}
+            emptyLabel="Sem cidade específica"
+          />
+        </Field>
         <Field label="Data">
           <TextInput type="date" value={values.date} onChange={(e) => setField('date', e.target.value)} />
         </Field>
-        <Field label="Status" group>
-          <div className="segmented" role="radiogroup" aria-label="Status">
-            {(Object.keys(EXPENSE_STATUSES) as ExpenseStatus[]).map((status) => (
-              <button
-                key={status}
-                type="button"
-                role="radio"
-                aria-checked={values.status === status}
-                className={values.status === status ? 'is-active' : ''}
-                onClick={() => setField('status', status)}
-              >
-                {EXPENSE_STATUSES[status]}
-              </button>
-            ))}
-          </div>
-        </Field>
       </FieldRow>
+
+      <Field label="Status" group>
+        <div className="segmented" role="radiogroup" aria-label="Status">
+          {(Object.keys(EXPENSE_STATUSES) as ExpenseStatus[]).map((status) => (
+            <button
+              key={status}
+              type="button"
+              role="radio"
+              aria-checked={values.status === status}
+              className={values.status === status ? 'is-active' : ''}
+              onClick={() => setField('status', status)}
+            >
+              {EXPENSE_STATUSES[status]}
+            </button>
+          ))}
+        </div>
+      </Field>
 
       {values.status === 'installments' && (
         <FieldRow>
