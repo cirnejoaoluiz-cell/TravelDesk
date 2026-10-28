@@ -84,6 +84,12 @@ A lista de cidades de cada viagem fica em `trip.destinations` (campo “Destinos
 
 Os registros guardam o nome da cidade escolhida. Se uma cidade sai da lista, nada é apagado: os registros mantêm a cidade, que aparece como “fora da lista da viagem” ao editar até que outra seja escolhida.
 
+### Roteiro integrado ao Itinerário
+
+A cidade de cada dia e os horários de chegada e partida são **calculados** a partir dos deslocamentos e hospedagens do Itinerário (`src/domain/dayPlan.ts`), sem cópia para o Roteiro: mudou o Itinerário, o Roteiro acompanha na hora. A única informação salva pelo Roteiro é a cidade escolhida manualmente para um dia (`trip.dayCities`), que nunca é sobrescrita; se ela divergir do Itinerário, o dia mostra um aviso com a opção de voltar à cidade calculada.
+
+Regras: chegada usa a data de chegada cadastrada (ou o dia seguinte, quando a chegada é mais cedo que a partida e não há data); dias sem deslocamento mantêm a última cidade; antes do primeiro deslocamento vale a cidade de origem; sem informação, “Cidade não identificada”. Horários nunca são estimados. Atividades incompatíveis (antes da chegada, depois da saída ou fora da cidade do dia) são apenas sinalizadas.
+
 ### Arquivos da aba Docs
 
 Os anexos (PDF e imagens, até 20 MB cada) não ficam dentro da viagem: a viagem guarda só uma referência (`StoredFile`) e o conteúdo vai para um armazenamento de arquivos (`src/data/files/FileStore.ts`):

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ArrowDownUp, ChevronDown, ChevronUp, Clock, Map as MapIcon, Pencil, Plus, Trash2 } from 'lucide-react';
+import { AlertTriangle, ArrowDownUp, ChevronDown, ChevronUp, Clock, Map as MapIcon, Pencil, Plus, Trash2 } from 'lucide-react';
 import { EmptyState } from '../../../components/EmptyState';
 import { Menu } from '../../../components/Menu';
 import { useConfirm } from '../../../components/Confirm';
@@ -11,6 +11,8 @@ import { ACTIVITY_ICONS } from '../icons';
 import { AddressLink, ExternalAnchor, TabHeader } from '../shared';
 import type { TabProps } from '../types';
 import { ActivityFormModal } from './ActivityFormModal';
+import { DayPlace } from './DayPlace';
+import { activityWarnings, planDays, sameCity, type DayPlan } from '../../../domain/dayPlan';
 import { tripCities } from '../../../domain/destinations';
 import { ExportPdfButton } from '../pdf/ExportPdfButton';
 import { groupActivitiesByDay, moveActivity, saveActivity, sortDayByTime } from './scheduleOps';
@@ -43,10 +45,25 @@ export function ScheduleTab({ trip, update }: TabProps) {
 
   const days = useMemo(() => groupActivitiesByDay(visible, tripDays, !cityFilter), [visible, tripDays, cityFilter]);
 
+  // Cidade e horários de cada dia, calculados do Itinerário (nada é copiado para o Roteiro).
+  const plans = useMemo(() => {
+    const dates = new Set([...tripDays, ...trip.activities.map((a) => a.date).filter(Boolean)]);
+    return planDays(trip, [...dates]);
+  }, [trip, tripDays]);
+  const planFor = (date: string): DayPlan | undefined => (date ? plans.get(date) ?? planDays(trip, [date]).get(date) : undefined);
+
+  const setDayCity = (date: string, city: string) =>
+    update((t) => {
+      const dayCities = { ...t.dayCities };
+      if (city) dayCities[date] = city;
+      else delete dayCities[date];
+      return { ...t, dayCities };
+    });
+
   const done = trip.activities.filter((a) => a.done).length;
 
   const openNew = (date = '') =>
-    setForm({ open: true, initial: null, defaults: { date, city: cityFilter || tripCityList[0] || '' } });
+    setForm({ open: true, initial: null, defaults: { date, city: planFor(date)?.city || cityFilter || '' } });
 
   const setActivities = (fn: (list: Activity[]) => Activity[]) =>
     update((t) => ({ ...t, activities: fn(t.activities) }));
@@ -105,13 +122,16 @@ export function ScheduleTab({ trip, update }: TabProps) {
         <div className="days">
           {days.map(({ date, items }) => {
             const dayNumber = tripDays.indexOf(date) + 1;
-            const dayCities = [...new Set(items.map((a) => a.city).filter(Boolean))];
+            const plan = date ? plans.get(date) : undefined;
+            // Cidades das atividades que não são a cidade do dia (ex.: bate-volta).
+            const dayCities = [...new Set(items.map((a) => a.city).filter(Boolean))].filter((c) => !sameCity(c, plan?.city));
             return (
               <section key={date || 'sem-data'} className="day">
                 <header className="day__header">
                   <div>
                     <p className="day__eyebrow">{date ? (dayNumber ? `Dia ${dayNumber}` : 'Fora do período') : 'A organizar'}</p>
                     <h3 className="day__title">{date ? formatWeekday(date) : 'Sem dia definido'}</h3>
+                    {plan && <DayPlace plan={plan} cities={tripCityList} onChangeCity={(c) => void setDayCity(date, c)} />}
                   </div>
                   <div className="day__tools">
                     {dayCities.map((c) => (
@@ -145,6 +165,7 @@ export function ScheduleTab({ trip, update }: TabProps) {
                       <ActivityRow
                         key={activity.id}
                         activity={activity}
+                        warnings={activityWarnings(activity, plan)}
                         isFirst={index === 0}
                         isLast={index === items.length - 1}
                         onToggle={() =>
@@ -173,6 +194,7 @@ export function ScheduleTab({ trip, update }: TabProps) {
         defaults={form.defaults}
         days={tripDays}
         cities={tripCityList}
+        planFor={planFor}
         onClose={() => setForm((f) => ({ ...f, open: false }))}
         onSubmit={(a) => void save(a)}
       />
@@ -182,6 +204,8 @@ export function ScheduleTab({ trip, update }: TabProps) {
 
 interface RowProps {
   activity: Activity;
+  /** Possíveis incompatibilidades com o plano do dia (só sinalização). */
+  warnings: string[];
   isFirst: boolean;
   isLast: boolean;
   onToggle(): void;
@@ -190,7 +214,7 @@ interface RowProps {
   onDelete(): void;
 }
 
-function ActivityRow({ activity, isFirst, isLast, onToggle, onMove, onEdit, onDelete }: RowProps) {
+function ActivityRow({ activity, warnings, isFirst, isLast, onToggle, onMove, onEdit, onDelete }: RowProps) {
   const Icon = ACTIVITY_ICONS[activity.category];
   return (
     <li className={`activity ${activity.done ? 'is-done' : ''}`}>
@@ -221,6 +245,11 @@ function ActivityRow({ activity, isFirst, isLast, onToggle, onMove, onEdit, onDe
           </div>
         )}
         {activity.notes && <p className="item-card__notes">{activity.notes}</p>}
+        {warnings.map((w) => (
+          <p key={w} className="activity__warning">
+            <AlertTriangle size={12} /> {w} — revise se necessário.
+          </p>
+        ))}
       </div>
       <div className="activity__actions">
         <div className="reorder">

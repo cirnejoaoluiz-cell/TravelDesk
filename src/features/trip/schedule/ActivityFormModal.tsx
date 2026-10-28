@@ -4,6 +4,7 @@ import { Modal } from '../../../components/Modal';
 import { Field, FieldRow, Select, TextArea, TextInput } from '../../../components/Field';
 import { ACTIVITY_CATEGORIES } from '../../../domain/catalog';
 import { emptyActivity } from '../../../domain/factories';
+import { activityWarnings, type DayPlan } from '../../../domain/dayPlan';
 import type { Activity, ActivityCategory } from '../../../domain/types';
 import { formatWeekday } from '../../../lib/dates';
 import { useFormState } from '../../../lib/useFormState';
@@ -15,18 +16,23 @@ interface Props {
   days: string[];
   /** Cidades da viagem atual (fonte única: `tripCities(trip)`). */
   cities: string[];
+  /** Plano do dia (cidade, chegadas e partidas) calculado do Itinerário. */
+  planFor(date: string): DayPlan | undefined;
   onClose(): void;
   onSubmit(activity: Activity): void;
 }
 
-export function ActivityFormModal({ open, initial, defaults, days, cities, onClose, onSubmit }: Props) {
+export function ActivityFormModal({ open, initial, defaults, days, cities, planFor, onClose, onSubmit }: Props) {
   const { values, setField, setValues } = useFormState<Activity>(emptyActivity());
   const [error, setError] = useState('');
+  // Enquanto a pessoa não escolher a cidade, uma atividade nova segue a cidade do dia escolhido.
+  const [cityTouched, setCityTouched] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setValues(initial ?? { ...emptyActivity(), ...defaults });
     setError('');
+    setCityTouched(Boolean(initial));
     // Reinicia o formulário somente ao abrir.
   }, [open]);
 
@@ -37,6 +43,15 @@ export function ActivityFormModal({ open, initial, defaults, days, cities, onClo
     }
     onSubmit({ ...values, title: values.title.trim() });
   };
+
+  const changeDate = (date: string) => {
+    setField('date', date);
+    if (!cityTouched) setField('city', planFor(date)?.city ?? '');
+  };
+
+  const plan = planFor(values.date);
+  const timedArrivals = plan?.arrivals.filter((a) => a.arriveTime) ?? [];
+  const warnings = activityWarnings(values, plan);
 
   // Dias fora do período da viagem (ex.: data antiga) continuam selecionáveis.
   const dayOptions = values.date && !days.includes(values.date) ? [...days, values.date].sort() : days;
@@ -62,14 +77,22 @@ export function ActivityFormModal({ open, initial, defaults, days, cities, onClo
           </Select>
         </Field>
         <Field label="Cidade" hint={cities.length ? undefined : NO_CITIES_HINT}>
-          <CitySelect cities={cities} value={values.city} onChange={(v) => setField('city', v)} emptyLabel="Sem cidade definida" />
+          <CitySelect
+            cities={cities}
+            value={values.city}
+            onChange={(v) => {
+              setCityTouched(true);
+              setField('city', v);
+            }}
+            emptyLabel="Sem cidade definida"
+          />
         </Field>
       </FieldRow>
 
       <FieldRow>
         <Field label="Dia">
           {dayOptions.length ? (
-            <Select value={values.date} onChange={(e) => setField('date', e.target.value)}>
+            <Select value={values.date} onChange={(e) => changeDate(e.target.value)}>
               <option value="">Sem dia definido</option>
               {dayOptions.map((d) => (
                 <option key={d} value={d}>
@@ -79,13 +102,25 @@ export function ActivityFormModal({ open, initial, defaults, days, cities, onClo
               ))}
             </Select>
           ) : (
-            <TextInput type="date" value={values.date} onChange={(e) => setField('date', e.target.value)} />
+            <TextInput type="date" value={values.date} onChange={(e) => changeDate(e.target.value)} />
           )}
         </Field>
         <Field label="Horário">
           <TextInput type="time" value={values.time} onChange={(e) => setField('time', e.target.value)} />
         </Field>
       </FieldRow>
+
+      {timedArrivals.length > 0 && (
+        <p className="form-note">
+          {timedArrivals.map((a) => `Chegada a ${a.to} às ${a.arriveTime}`).join(' · ')} (pelo Itinerário). Considere o tempo de
+          desembarque, bagagem e check-in ao escolher o horário.
+        </p>
+      )}
+      {warnings.length > 0 && (
+        <p className="notice notice--compact">
+          {warnings.join(' · ')}. Você pode salvar mesmo assim.
+        </p>
+      )}
 
       <Field label="Endereço">
         <TextInput value={values.address} onChange={(e) => setField('address', e.target.value)} placeholder="Endereço ou nome do local" />

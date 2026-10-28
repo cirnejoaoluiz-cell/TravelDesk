@@ -35,6 +35,7 @@ export function createTrip(draft: TripDraft): Trip {
     tasks: [],
     expenses: [],
     documents: [],
+    dayCities: {},
     createdAt: now,
     updatedAt: now,
   };
@@ -122,6 +123,10 @@ export function normalizeTrip(raw: Loose<Trip>): Trip {
     tasks: (raw.tasks ?? []).map((t) => ({ ...createTask(''), ...t })),
     expenses: (raw.expenses ?? []).map((e) => ({ ...emptyExpense(raw.currency ?? 'BRL'), ...e })),
     documents: (raw.documents ?? []).map((d) => ({ ...emptyDocument(), ...d })),
+    dayCities:
+      raw.dayCities && typeof raw.dayCities === 'object'
+        ? Object.fromEntries(Object.entries(raw.dayCities).filter(([, v]) => typeof v === 'string' && v.trim()))
+        : {},
   } as Trip;
 }
 

@@ -1684,10 +1684,14 @@ input[type='time'].input {
 
 .day__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   padding: 14px 12px 14px 18px;
+}
+
+.day__header > div:first-child {
+  min-width: 0;
 }
 
 .day__eyebrow {
@@ -1803,6 +1807,133 @@ input[type='time'].input {
 .reorder {
   display: flex;
   flex-direction: column;
+}
+
+/* Roteiro: cidade e deslocamentos do dia (calculados do Itinerário) */
+
+.day-place {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.day-place__line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.day-place__line > svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.day-place__city {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.day-place__city--unknown {
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.day-place__arrival {
+  font-weight: 500;
+  color: var(--accent-ink);
+}
+
+.day-place__source {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.day-place__edit {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.day-place__picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 340px;
+}
+
+.day-place__picker .input {
+  min-height: 36px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 14px;
+}
+
+.day-place__moves {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.day-place__moves li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+.day-place__moves svg {
+  flex-shrink: 0;
+  color: var(--ink-3);
+}
+
+.day-place__hint {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.day-place__conflict {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+  color: var(--warning-ink);
+  font-size: 12.5px;
+}
+
+.activity__warning {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--warning-ink);
+}
+
+.activity__warning svg {
+  flex-shrink: 0;
+  color: var(--warning);
+}
+
+.form-note {
+  margin-top: -6px;
+  font-size: 12.5px;
+  color: var(--ink-2);
 }
 
 /* Checklist */

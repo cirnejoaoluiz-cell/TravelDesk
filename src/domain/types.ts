@@ -37,6 +37,11 @@ export interface Trip {
   tasks: ChecklistTask[];
   expenses: Expense[];
   documents: TripDocument[];
+  /**
+   * Cidade escolhida manualmente para um dia no Roteiro (data → cidade).
+   * Só guarda ajustes manuais: a cidade sugerida é calculada do Itinerário (domain/dayPlan.ts).
+   */
+  dayCities: Record<ISODate, string>;
   createdAt: string;
   updatedAt: string;
 }
