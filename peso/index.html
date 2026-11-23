@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Acompanhe déficit calórico, treinos e peso." />
-    <meta name="theme-color" content="#059669" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
@@ -13,8 +13,18 @@
     <meta name="apple-mobile-web-app-title" content="Déficit" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Déficit</title>
+    <script>
+      // Aplica o tema antes de desenhar a página (evita piscar no tema errado).
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('deficit:theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        if (t === 'dark') document.documentElement.classList.add('dark');
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', t === 'dark' ? '#020617' : '#ffffff');
+      })();
+    </script>
   </head>
-  <body class="bg-slate-50">
+  <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

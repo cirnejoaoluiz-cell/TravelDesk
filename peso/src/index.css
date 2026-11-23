@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Tema escuro controlado pela classe .dark no <html> (toggle do header). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; } /* campos nativos (data, select) no tema escuro */
 html, body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
 body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 input, select, button { font-size: 16px; } /* evita zoom no iOS */

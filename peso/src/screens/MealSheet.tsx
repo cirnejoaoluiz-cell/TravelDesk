@@ -76,7 +76,7 @@ export function MealSheet({ date, meal, onClose }: { date: string; meal?: Meal; 
 
         {!meal && data.favorites.length > 0 && (
           <div>
-            <p className="mb-2 text-sm font-medium text-slate-600">Favoritas — um toque lança no {MEAL_LABEL[type].toLowerCase()}</p>
+            <p className="mb-2 text-sm font-medium text-slate-600 dark:text-slate-300">Favoritas — um toque lança no {MEAL_LABEL[type].toLowerCase()}</p>
             <div className="flex flex-wrap gap-2">
               {data.favorites.map((f) => {
                 const k = f.items.reduce((a, it) => {
@@ -84,9 +84,9 @@ export function MealSheet({ date, meal, onClose }: { date: string; meal?: Meal; 
                   return a + (food ? foodValues(food, it.grams).kcal : 0);
                 }, 0);
                 return (
-                  <button key={f.id} onClick={() => launchFavorite(f)} className="rounded-xl bg-emerald-50 px-3 py-2 text-left text-sm ring-1 ring-emerald-200 active:bg-emerald-100">
-                    <span className="block font-medium text-emerald-900">⭐ {f.name}</span>
-                    <span className="text-xs text-emerald-700">{fmt0(k)} kcal</span>
+                  <button key={f.id} onClick={() => launchFavorite(f)} className="rounded-xl bg-emerald-50 dark:bg-emerald-950 px-3 py-2 text-left text-sm ring-1 ring-emerald-200 dark:ring-emerald-800 active:bg-emerald-100 dark:active:bg-emerald-900">
+                    <span className="block font-medium text-emerald-900 dark:text-emerald-200">⭐ {f.name}</span>
+                    <span className="text-xs text-emerald-700 dark:text-emerald-400">{fmt0(k)} kcal</span>
                   </button>
                 );
               })}
@@ -99,7 +99,7 @@ export function MealSheet({ date, meal, onClose }: { date: string; meal?: Meal; 
             const f = foodById(d.foodId);
             const v = f && d.grams > 0 ? foodValues(f, d.grams) : null;
             return (
-              <div key={d.key} className="space-y-2 rounded-2xl bg-white p-3 ring-1 ring-slate-200">
+              <div key={d.key} className="space-y-2 rounded-2xl bg-white dark:bg-slate-900 p-3 ring-1 ring-slate-200 dark:ring-slate-800">
                 <div className="flex gap-2">
                   <select
                     className={`${inputCls} flex-1`}
@@ -112,7 +112,7 @@ export function MealSheet({ date, meal, onClose }: { date: string; meal?: Meal; 
                     ))}
                     <option value="__new">+ Cadastrar novo alimento</option>
                   </select>
-                  <button className="px-2 text-xl text-slate-400" aria-label="Remover item" onClick={() => setDrafts((ds) => ds.filter((x) => x.key !== d.key))}>
+                  <button className="px-2 text-xl text-slate-400 dark:text-slate-500" aria-label="Remover item" onClick={() => setDrafts((ds) => ds.filter((x) => x.key !== d.key))}>
                     ×
                   </button>
                 </div>
@@ -131,13 +131,13 @@ export function MealSheet({ date, meal, onClose }: { date: string; meal?: Meal; 
                   {f?.portions?.map((p) => (
                     <button
                       key={p.label}
-                      className="rounded-lg bg-slate-100 px-2 py-2 text-xs font-medium text-slate-700 active:bg-slate-200"
+                      className="rounded-lg bg-slate-100 dark:bg-slate-800 px-2 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700"
                       onClick={() => setDraft(d.key, { grams: (d.grams > 0 ? d.grams : 0) + p.grams })}
                     >
                       +{p.label} ({p.grams} g)
                     </button>
                   ))}
-                  <span className="ml-auto text-right text-sm text-slate-600">
+                  <span className="ml-auto text-right text-sm text-slate-600 dark:text-slate-300">
                     {v ? <>{fmt0(v.kcal)} kcal<br /><span className="text-xs">{fmt1(v.prot)} g P</span></> : '—'}
                   </span>
                 </div>

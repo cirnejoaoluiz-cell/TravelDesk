@@ -73,14 +73,14 @@ export function WorkoutSheet({ date, workout, onClose }: { date: string; workout
             </Field>
             <div className="flex flex-wrap gap-2">
               {[30, 45, 60, 90].map((m) => (
-                <button key={m} onClick={() => setMinutes(m)} className="rounded-lg bg-slate-100 px-3 py-2 text-sm active:bg-slate-200">{m} min</button>
+                <button key={m} onClick={() => setMinutes(m)} className="rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-2 text-sm active:bg-slate-200 dark:active:bg-slate-700">{m} min</button>
               ))}
             </div>
           </div>
         ) : (
           <>
-            <div className="space-y-3 rounded-2xl bg-white p-3 ring-1 ring-slate-200">
-              <p className="text-sm font-medium text-slate-600">Presets (gera os segmentos)</p>
+            <div className="space-y-3 rounded-2xl bg-white dark:bg-slate-900 p-3 ring-1 ring-slate-200 dark:ring-slate-800">
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Presets (gera os segmentos)</p>
               <div className="grid grid-cols-2 gap-2">
                 {PRESETS.map((p) => (
                   <Button
@@ -110,16 +110,16 @@ export function WorkoutSheet({ date, workout, onClose }: { date: string; workout
             </div>
 
             <div className="space-y-2">
-              <div className="grid grid-cols-[2rem_1fr_1fr_3.5rem_1.5rem] items-center gap-2 px-1 text-xs text-slate-500">
+              <div className="grid grid-cols-[2rem_1fr_1fr_3.5rem_1.5rem] items-center gap-2 px-1 text-xs text-slate-500 dark:text-slate-400">
                 <span>#</span><span>Velocidade</span><span>Minutos</span><span className="text-right">MET</span><span />
               </div>
               {rows.map((r, i) => (
                 <div key={r.key} className="grid grid-cols-[2rem_1fr_1fr_3.5rem_1.5rem] items-center gap-2">
-                  <span className="text-sm text-slate-400">{i + 1}</span>
+                  <span className="text-sm text-slate-400 dark:text-slate-500">{i + 1}</span>
                   <NumInput value={r.speed} onChange={(n) => setRow(r.key, { speed: n })} suffix="km/h" />
                   <NumInput value={r.minutes} onChange={(n) => setRow(r.key, { minutes: n })} suffix="min" />
-                  <span className="text-right text-sm text-slate-600">{r.speed > 0 ? fmt1(treadmillMet(r.speed)) : '—'}</span>
-                  <button className="text-xl text-slate-400" aria-label="Remover" onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))}>×</button>
+                  <span className="text-right text-sm text-slate-600 dark:text-slate-300">{r.speed > 0 ? fmt1(treadmillMet(r.speed)) : '—'}</span>
+                  <button className="text-xl text-slate-400 dark:text-slate-500" aria-label="Remover" onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))}>×</button>
                 </div>
               ))}
               <Button variant="secondary" className="w-full" onClick={() => setRows((rs) => [...rs, { key: uid(), speed: rs.at(-1)?.speed ?? NaN, minutes: NaN }])}>
@@ -129,7 +129,7 @@ export function WorkoutSheet({ date, workout, onClose }: { date: string; workout
           </>
         )}
 
-        <div className="sticky bottom-0 -mx-4 -mb-4 space-y-3 bg-slate-50/95 p-4 backdrop-blur">
+        <div className="sticky bottom-0 -mx-4 -mb-4 space-y-3 bg-slate-50/95 dark:bg-slate-950/95 p-4 backdrop-blur">
         <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-800 px-4 py-3 text-center text-white">
           <div><div className="text-xs text-slate-300">Gasto</div><div className="font-semibold">{fmt0(kcal)} kcal</div></div>
           <div><div className="text-xs text-slate-300">Tempo</div><div className="font-semibold">{fmt0(kind === 'esteira' ? tm.minutes : minutes || 0)} min</div></div>

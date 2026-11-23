@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Header } from './components/Header';
 import { today } from './lib/dates';
 import { useStore } from './lib/store';
 import { uid } from './lib/format';
@@ -23,10 +24,12 @@ export function App() {
 
   if (!data.profile) {
     return (
-      <main className="mx-auto max-w-lg space-y-4 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <div className="pt-4">
-          <h1 className="text-2xl font-bold text-emerald-700">Déficit</h1>
-          <p className="text-slate-600">Vamos montar sua meta. Dá para editar depois em Ajustes.</p>
+      <>
+      <Header />
+      <main className="mx-auto max-w-lg space-y-4 p-4">
+        <div>
+          <h1 className="text-xl font-bold">Vamos começar</h1>
+          <p className="text-slate-600 dark:text-slate-300">Vamos montar sua meta. Dá para editar depois em Ajustes.</p>
         </div>
         <ProfileForm
           onSave={(p) =>
@@ -40,18 +43,20 @@ export function App() {
           }
         />
       </main>
+      </>
     );
   }
 
   return (
-    <div className="mx-auto min-h-dvh max-w-lg">
-      <main className="space-y-4 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-28">
+    <div className="min-h-dvh">
+      <Header />
+      <main className="mx-auto max-w-lg space-y-4 p-4 pb-28">
         {tab === 'hoje' && <Today date={date} setDate={setDate} />}
         {tab === 'semana' && <Week onOpenDay={(d) => { setDate(d); setTab('hoje'); }} />}
         {tab === 'peso' && <Weight />}
         {tab === 'ajustes' && <Settings />}
       </main>
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/90 pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto grid max-w-lg grid-cols-4">
           {TABS.map((t) => (
             <button
@@ -60,7 +65,7 @@ export function App() {
                 setTab(t.id);
                 if (t.id === 'hoje' && tab === 'hoje') setDate(today());
               }}
-              className={`flex flex-col items-center py-2 text-xs font-medium ${tab === t.id ? 'text-emerald-700' : 'text-slate-500'}`}
+              className={`flex flex-col items-center py-2 text-xs font-medium ${tab === t.id ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}
             >
               <span className="text-xl">{t.icon}</span>
               {t.label}

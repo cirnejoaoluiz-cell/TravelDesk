@@ -12,7 +12,7 @@ export function FoodForm({ initial, onSave, onCancel }: { initial?: Food; onSave
   const valid = name.trim() && kcal >= 0 && prot >= 0;
 
   return (
-    <div className="space-y-3 rounded-2xl bg-white p-3 ring-1 ring-slate-200">
+    <div className="space-y-3 rounded-2xl bg-white dark:bg-slate-900 p-3 ring-1 ring-slate-200 dark:ring-slate-800">
       <Field label="Nome"><input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex.: Ovo cozido" /></Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="kcal / 100 g"><NumInput value={kcal} onChange={setKcal} /></Field>

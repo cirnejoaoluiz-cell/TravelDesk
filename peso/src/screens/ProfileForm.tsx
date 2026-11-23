@@ -42,15 +42,15 @@ export function ProfileForm({ initial, onSave, onCancel }: { initial?: Profile |
         <Card className="space-y-2 text-sm">
           <Row label="TMB (Mifflin-St Jeor)" value={`${fmt0(bmr(sex, weight, height, age))} kcal`} />
           <Row label="Gasto base (TMB × 1,3)" value={`${fmt0(baseExpenditure(profile, weight))} kcal/dia`} />
-          <p className="text-xs text-slate-500">Exercício é somado à parte, em cada treino.</p>
-          <hr className="border-slate-200" />
+          <p className="text-xs text-slate-500 dark:text-slate-400">Exercício é somado à parte, em cada treino.</p>
+          <hr className="border-slate-200 dark:border-slate-800" />
           <Row label={`Déficit total (${fmt1(loss)} kg × 7.700)`} value={`${fmt0(t.totalKcal)} kcal`} />
           <Row label="Meta semanal" value={`${fmt0(t.weekly)} kcal`} strong />
           <Row label="Meta diária" value={`${fmt0(t.daily)} kcal`} strong />
           <Row label="Ritmo" value={`${fmt2(t.kgPerWeek)} kg/sem (${fmt2(t.pctPerWeek)}% do peso)`} />
           <Row label="Fim do plano" value={formatShort(planEndDate(profile))} />
           {t.tooFast && (
-            <div className="mt-2 rounded-xl bg-amber-50 p-3 text-amber-900 ring-1 ring-amber-200">
+            <div className="mt-2 rounded-xl bg-amber-50 dark:bg-amber-950 p-3 text-amber-900 dark:text-amber-200 ring-1 ring-amber-200 dark:ring-amber-800">
               ⚠️ A meta passa de 1% do peso corporal por semana ({fmt2(t.pctPerWeek)}%). Ritmos acima disso tendem a
               custar massa muscular e são difíceis de manter. Considere mais semanas.
             </div>
@@ -71,8 +71,8 @@ export function ProfileForm({ initial, onSave, onCancel }: { initial?: Profile |
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="flex justify-between gap-3">
-      <span className="text-slate-600">{label}</span>
-      <span className={strong ? 'font-semibold text-emerald-700' : 'font-medium'}>{value}</span>
+      <span className="text-slate-600 dark:text-slate-300">{label}</span>
+      <span className={strong ? 'font-semibold text-emerald-700 dark:text-emerald-400' : 'font-medium'}>{value}</span>
     </div>
   );
 }

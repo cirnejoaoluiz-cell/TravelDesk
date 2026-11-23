@@ -70,7 +70,7 @@ export function Weight() {
             />
           );
         })()}
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
           <Legend color="bg-slate-400" label="Pesagens" dot />
           <Legend color="bg-emerald-600" label="Média 7 dias" />
           <Legend color="bg-slate-400" label="Meta projetada" dashed />
@@ -84,7 +84,7 @@ export function Weight() {
         <Row label="Previsto pelo déficit acumulado" value={`${fmt2(predLoss)} kg`} sub={`${fmt0(lastPred?.cum ?? 0)} kcal ÷ 7.700`} />
         <Row label="Previsto pela meta do plano" value={`${fmt2(planLoss)} kg`} />
         {realLoss != null && (
-          <p className="rounded-xl bg-slate-50 p-3 text-slate-600">
+          <p className="rounded-xl bg-slate-50 dark:bg-slate-800 p-3 text-slate-600 dark:text-slate-300">
             {Math.abs(realLoss - predLoss) < 0.5
               ? 'O peso real está acompanhando o déficit registrado. 👍'
               : realLoss > predLoss
@@ -92,19 +92,19 @@ export function Weight() {
                 : `Você perdeu ${fmt1(predLoss - realLoss)} kg a menos do que o déficit prevê: confira porções, extras não lançados ou retenção de líquido.`}
           </p>
         )}
-        <p className="text-xs text-slate-500">Meta: {fmt1(p.startWeightKg - p.goalLossKg)} kg em {formatShort(end)} ({daysBetween(now, end) > 0 ? `faltam ${daysBetween(now, end)} dias` : 'plano encerrado'}).</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Meta: {fmt1(p.startWeightKg - p.goalLossKg)} kg em {formatShort(end)} ({daysBetween(now, end) > 0 ? `faltam ${daysBetween(now, end)} dias` : 'plano encerrado'}).</p>
       </Card>
 
-      <Card className="divide-y divide-slate-100">
-        {weighIns.length === 0 && <p className="text-sm text-slate-500">Nenhuma pesagem ainda.</p>}
+      <Card className="divide-y divide-slate-100 dark:divide-slate-800">
+        {weighIns.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">Nenhuma pesagem ainda.</p>}
         {[...weighIns].reverse().map((w) => {
           const m = ma.find((x) => x.date === w.date);
           return (
-            <button key={w.id} onClick={() => setEdit(w)} className="flex w-full justify-between py-2 text-left active:bg-slate-50">
+            <button key={w.id} onClick={() => setEdit(w)} className="flex w-full justify-between py-2 text-left active:bg-slate-50 dark:active:bg-slate-800">
               <span>{formatShort(w.date)}</span>
               <span>
                 <b>{fmt1(w.kg)} kg</b>
-                {m && <span className="ml-2 text-xs text-slate-500">média {fmt1(m.kg)}</span>}
+                {m && <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">média {fmt1(m.kg)}</span>}
               </span>
             </button>
           );
@@ -119,8 +119,8 @@ export function Weight() {
 function Row({ label, value, sub, strong }: { label: string; value: string; sub?: string; strong?: boolean }) {
   return (
     <div className="flex justify-between gap-3">
-      <span className="text-slate-600">{label}{sub && <span className="block text-xs text-slate-400">{sub}</span>}</span>
-      <span className={strong ? 'font-semibold text-emerald-700' : 'font-medium'}>{value}</span>
+      <span className="text-slate-600 dark:text-slate-300">{label}{sub && <span className="block text-xs text-slate-400 dark:text-slate-500">{sub}</span>}</span>
+      <span className={strong ? 'font-semibold text-emerald-700 dark:text-emerald-400' : 'font-medium'}>{value}</span>
     </div>
   );
 }
@@ -157,18 +157,18 @@ function Chart({ start, end, points, ma, predicted, goal, todayISO }: {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Gráfico de peso">
       {yTicks.map((v) => (
         <g key={v}>
-          <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="#e2e8f0" />
-          <text x={L - 4} y={y(v) + 3} textAnchor="end" fontSize="9" fill="#64748b">{v}</text>
+          <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} className="stroke-slate-200 dark:stroke-slate-700" />
+          <text x={L - 4} y={y(v) + 3} textAnchor="end" fontSize="9" className="fill-slate-500 dark:fill-slate-400">{v}</text>
         </g>
       ))}
       {xTicks.map((d, i) => (
-        <text key={i} x={x(d)} y={H - 6} textAnchor={i === 0 ? 'start' : i === 4 ? 'end' : 'middle'} fontSize="9" fill="#64748b">{formatShort(d)}</text>
+        <text key={i} x={x(d)} y={H - 6} textAnchor={i === 0 ? 'start' : i === 4 ? 'end' : 'middle'} fontSize="9" className="fill-slate-500 dark:fill-slate-400">{formatShort(d)}</text>
       ))}
-      {todayISO >= start && todayISO <= end && <line x1={x(todayISO)} x2={x(todayISO)} y1={T} y2={H - B} stroke="#cbd5e1" strokeDasharray="2 3" />}
+      {todayISO >= start && todayISO <= end && <line x1={x(todayISO)} x2={x(todayISO)} y1={T} y2={H - B} className="stroke-slate-300 dark:stroke-slate-600" strokeDasharray="2 3" />}
       <path d={path(goal)} fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="5 4" />
       {predicted.length > 1 && <path d={path(predicted)} fill="none" stroke="#f59e0b" strokeWidth="1.5" />}
       {points.map((p) => <circle key={p.date} cx={x(p.date)} cy={y(p.kg)} r="2.5" fill="#94a3b8" />)}
-      {ma.length > 1 && <path d={path(ma)} fill="none" stroke="#059669" strokeWidth="2.5" strokeLinejoin="round" />}
+      {ma.length > 1 && <path d={path(ma)} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinejoin="round" />}
       {ma.length === 1 && <circle cx={x(ma[0].date)} cy={y(ma[0].kg)} r="3.5" fill="#059669" />}
     </svg>
   );
