@@ -15,5 +15,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // peso/ é um app separado, com dependências e testes próprios.
+    exclude: ['**/node_modules/**', '**/dist/**', 'peso/**'],
   },
 });
