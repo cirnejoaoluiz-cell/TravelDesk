@@ -4,8 +4,8 @@ import { dayBalance, planTargets, planWeekIndex, weekSummary } from '../lib/calc
 import { addDays, formatDay, today } from '../lib/dates';
 import { fmt0, fmt1, fmt2 } from '../lib/format';
 import { useStore } from '../lib/store';
-import type { Meal, MealType, WeighIn, Workout } from '../lib/types';
-import { MEAL_LABEL, MealSheet } from './MealSheet';
+import type { Meal, WeighIn, Workout } from '../lib/types';
+import { MEAL_LABEL, MEAL_TYPES, MealSheet } from './MealSheet';
 import { WeightSheet } from './WeightSheet';
 import { WORKOUT_LABEL, WorkoutSheet } from './WorkoutSheet';
 
@@ -103,7 +103,7 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
         )}
       </Card>
 
-      {(['almoco', 'jantar', 'extra'] as MealType[]).map((type) => {
+      {MEAL_TYPES.map((type) => {
         const ms = meals.filter((m) => m.type === type);
         if (!ms.length) return null;
         return (

@@ -6,14 +6,16 @@ import { useStore } from '../lib/store';
 import type { Favorite, Meal, MealItem, MealType } from '../lib/types';
 import { FoodForm } from './FoodForm';
 
-export const MEAL_LABEL: Record<MealType, string> = { almoco: 'Almoço', jantar: 'Jantar', extra: 'Extra' };
-const MEAL_OPTIONS = (Object.keys(MEAL_LABEL) as MealType[]).map((v) => ({ value: v, label: MEAL_LABEL[v] }));
+export const MEAL_TYPES: MealType[] = ['cafe', 'almoco', 'jantar', 'extra'];
+export const MEAL_LABEL: Record<MealType, string> = { cafe: 'Café da manhã', almoco: 'Almoço', jantar: 'Jantar', extra: 'Extra' };
+const SHORT_LABEL: Record<MealType, string> = { ...MEAL_LABEL, cafe: 'Café' };
+const MEAL_OPTIONS = MEAL_TYPES.map((v) => ({ value: v, label: SHORT_LABEL[v] }));
 
 interface Draft { key: string; foodId: string; grams: number }
 
 function defaultType(): MealType {
   const h = new Date().getHours();
-  return h < 16 ? 'almoco' : h < 22 ? 'jantar' : 'extra';
+  return h < 10 ? 'cafe' : h < 16 ? 'almoco' : h < 22 ? 'jantar' : 'extra';
 }
 
 export function MealSheet({ date, meal, onClose }: { date: string; meal?: Meal; onClose: () => void }) {

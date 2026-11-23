@@ -25,7 +25,7 @@ export interface Food {
   portions?: Portion[];
 }
 
-export type MealType = 'almoco' | 'jantar' | 'extra';
+export type MealType = 'cafe' | 'almoco' | 'jantar' | 'extra';
 
 export interface MealItem {
   id: string;
@@ -91,4 +91,6 @@ export interface AppData {
   workouts: Workout[];
   weighIns: WeighIn[];
   freeDays: Record<string, FreeDay>;
+  /** Versão da base de alimentos já aplicada (para incluir alimentos novos da base). */
+  foodSeed?: number;
 }

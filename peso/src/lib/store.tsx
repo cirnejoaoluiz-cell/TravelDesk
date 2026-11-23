@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import { DEFAULT_FOODS } from './foods';
+import { DEFAULT_FOODS, FOOD_SEED_VERSION, applyFoodSeeds } from './foods';
 import type { AppData } from './types';
 
 const KEY = 'deficit:data';
 
 export function emptyData(): AppData {
-  return { version: 1, profile: null, foods: DEFAULT_FOODS, meals: [], favorites: [], workouts: [], weighIns: [], freeDays: {} };
+  return { version: 1, profile: null, foods: DEFAULT_FOODS, meals: [], favorites: [], workouts: [], weighIns: [], freeDays: {}, foodSeed: FOOD_SEED_VERSION };
 }
 
 /** Valida e completa um objeto vindo do localStorage ou de um backup. */
@@ -17,12 +17,13 @@ export function normalize(raw: unknown): AppData {
   return {
     version: 1,
     profile: r.profile ?? null,
-    foods: Array.isArray(r.foods) && r.foods.length ? r.foods : DEFAULT_FOODS,
+    foods: Array.isArray(r.foods) && r.foods.length ? applyFoodSeeds(r.foods, r.foodSeed) : DEFAULT_FOODS,
     meals: arr(r.meals),
     favorites: arr(r.favorites),
     workouts: arr(r.workouts),
     weighIns: arr(r.weighIns),
     freeDays: r.freeDays && typeof r.freeDays === 'object' ? r.freeDays : {},
+    foodSeed: FOOD_SEED_VERSION,
   };
 }
 

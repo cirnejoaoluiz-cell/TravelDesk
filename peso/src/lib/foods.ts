@@ -16,4 +16,26 @@ export const DEFAULT_FOODS: Food[] = [
   { id: 'queijo-coalho', name: 'Queijo coalho', kcal100: 330, prot100: 23 },
   { id: 'azeite', name: 'Azeite', kcal100: 884, prot100: 0, portions: [{ label: '1 col. chá', grams: 5 }] },
   { id: 'salada', name: 'Salada', kcal100: 20, prot100: 1 },
+  // Café da manhã (incluídos na versão 2 da base)
+  { id: 'ovo', name: 'Ovo cozido/mexido', kcal100: 155, prot100: 13, portions: [{ label: '1 ovo', grams: 50 }] },
+  { id: 'cuscuz', name: 'Cuscuz de milho', kcal100: 113, prot100: 2.2 },
+  { id: 'pao-frances', name: 'Pão francês', kcal100: 300, prot100: 8, portions: [{ label: '1 pão', grams: 50 }] },
 ];
+
+/** Versão atual da base. Ao subir, inclua os ids novos em FOOD_SEEDS. */
+export const FOOD_SEED_VERSION = 2;
+export const FOOD_SEEDS: Record<number, string[]> = {
+  2: ['ovo', 'cuscuz', 'pao-frances'],
+};
+
+/** Inclui nos dados existentes os alimentos que entraram na base depois (sem recolocar os que o usuário apagou antes). */
+export function applyFoodSeeds(foods: Food[], seed: number | undefined): Food[] {
+  let out = foods;
+  for (let v = (seed ?? 1) + 1; v <= FOOD_SEED_VERSION; v++) {
+    for (const id of FOOD_SEEDS[v] ?? []) {
+      const f = DEFAULT_FOODS.find((x) => x.id === id);
+      if (f && !out.some((x) => x.id === id)) out = [...out, f];
+    }
+  }
+  return out;
+}
