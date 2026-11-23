@@ -1,7 +1,8 @@
-// Service worker simples: o app funciona offline depois do primeiro acesso.
-// Navegação: rede primeiro (pega versão nova), cache como reserva.
-// Arquivos estáticos: cache primeiro (nomes com hash mudam a cada build).
-const CACHE = 'deficit-v1';
+// Service worker: o app funciona offline depois do primeiro acesso, sem prender versões antigas.
+// - Página: sempre da rede, ignorando o cache HTTP (cache só se estiver offline).
+// - assets/ (nomes com hash, mudam a cada build): cache primeiro.
+// - Demais arquivos (manifest, ícones): rede primeiro, cache se offline.
+const CACHE = 'kcalc-v2';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => {
@@ -12,34 +13,37 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+function save(req, res) {
+  if (res.ok) {
+    const copy = res.clone();
+    caches.open(CACHE).then((c) => c.put(req, copy));
+  }
+  return res;
+}
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  const url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
+  if (url.searchParams.has('check')) return; // verificação de versão: direto na rede
 
   if (req.mode === 'navigate') {
     event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy));
-          return res;
-        })
-        .catch(() => caches.match(req).then((r) => r || caches.match('./'))),
+      fetch(req, { cache: 'no-store' })
+        .then((res) => save(req, res))
+        .catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || caches.match('./'))),
     );
     return;
   }
 
+  if (url.pathname.includes('/assets/')) {
+    event.respondWith(caches.match(req).then((cached) => cached || fetch(req).then((res) => save(req, res))));
+    return;
+  }
+
   event.respondWith(
-    caches.match(req).then(
-      (cached) =>
-        cached ||
-        fetch(req).then((res) => {
-          if (res.ok) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-          }
-          return res;
-        }),
-    ),
+    fetch(req, { cache: 'no-cache' })
+      .then((res) => save(req, res))
+      .catch(() => caches.match(req)),
   );
 });

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
 import { StoreProvider } from './lib/store';
+import { startUpdateCheck } from './lib/updateCheck';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,5 +14,8 @@ createRoot(document.getElementById('root')!).render(
 );
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  // updateViaCache 'none': o navegador sempre busca o sw.js novo, sem cache HTTP.
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {}));
 }
+
+startUpdateCheck();
