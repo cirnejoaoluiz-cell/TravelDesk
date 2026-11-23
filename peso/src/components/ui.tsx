@@ -14,7 +14,7 @@ export function Sheet({ title, onClose, children }: { title: string; onClose: ()
     };
   }, []);
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 dark:bg-black/60" onClick={onClose}>
+    <div data-sheet className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 dark:bg-black/60" onClick={onClose}>
       <div
         className="flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-3xl bg-slate-50 dark:bg-slate-950 pb-[env(safe-area-inset-bottom)]"
         onClick={(e) => e.stopPropagation()}
