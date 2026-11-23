@@ -4,8 +4,8 @@ import { dayBalance, planTargets, planWeekIndex, weekSummary } from '../lib/calc
 import { addDays, formatDay, today } from '../lib/dates';
 import { fmt0, fmt1, fmt2 } from '../lib/format';
 import { useStore } from '../lib/store';
-import type { Meal, MealType, WeighIn, Workout } from '../lib/types';
-import { MEAL_LABEL, MealSheet } from './MealSheet';
+import type { Meal, WeighIn, Workout } from '../lib/types';
+import { MEAL_LABEL, MEAL_TYPES, MealSheet } from './MealSheet';
 import { WeightSheet } from './WeightSheet';
 import { WORKOUT_LABEL, WorkoutSheet } from './WorkoutSheet';
 
@@ -44,24 +44,24 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 active:bg-slate-200" onClick={() => setDate(addDays(date, -1))} aria-label="Dia anterior">‹</button>
+        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 dark:text-slate-400 active:bg-slate-200 dark:active:bg-slate-700" onClick={() => setDate(addDays(date, -1))} aria-label="Dia anterior">‹</button>
         <button className="text-center" onClick={() => setDate(now)}>
           <div className="text-lg font-semibold capitalize">{isToday ? 'Hoje' : formatDay(date)}</div>
-          <div className="text-xs text-slate-500">{isToday ? formatDay(date) : 'toque para voltar a hoje'}</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">{isToday ? formatDay(date) : 'toque para voltar a hoje'}</div>
         </button>
-        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 active:bg-slate-200 disabled:opacity-30" disabled={isToday} onClick={() => setDate(addDays(date, 1))} aria-label="Próximo dia">›</button>
+        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 dark:text-slate-400 active:bg-slate-200 dark:active:bg-slate-700 disabled:opacity-30" disabled={isToday} onClick={() => setDate(addDays(date, 1))} aria-label="Próximo dia">›</button>
       </div>
 
       <Card className="space-y-3">
         <div className="flex items-end justify-between">
           <div>
-            <div className="text-sm text-slate-500">Déficit do dia</div>
-            <div className={`text-4xl font-bold ${!b.counts ? 'text-slate-300' : b.deficit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+            <div className="text-sm text-slate-500 dark:text-slate-400">Déficit do dia</div>
+            <div className={`text-4xl font-bold ${!b.counts ? 'text-slate-300 dark:text-slate-600' : b.deficit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
               {b.counts ? fmt0(b.deficit) : '—'} <span className="text-base font-medium">kcal</span>
             </div>
           </div>
-          <div className="text-right text-sm text-slate-500">
-            meta<br /><span className="font-semibold text-slate-700">{fmt0(dayTarget)} kcal</span>
+          <div className="text-right text-sm text-slate-500 dark:text-slate-400">
+            meta<br /><span className="font-semibold text-slate-700 dark:text-slate-200">{fmt0(dayTarget)} kcal</span>
           </div>
         </div>
         <Progress value={b.counts ? b.deficit : 0} max={dayTarget} />
@@ -70,14 +70,14 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
           <Stat label="Gasto base" value={fmt0(b.base)} />
           <Stat label="Exercício" value={fmt0(b.exercise)} />
         </div>
-        <p className="text-center text-xs text-slate-500">
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
           ({fmt0(b.base)} + {fmt0(b.exercise)}) − {b.status === 'livre-branco' ? 'consumo' : fmt0(b.consumed)} = déficit
           {b.status === 'sem-registro' && ' · lance uma refeição para o dia contar'}
           {b.status === 'livre-branco' && ' · dia livre em branco conta como déficit 0'}
         </p>
         <div>
           <div className="mb-1 flex justify-between text-sm">
-            <span className="text-slate-600">Proteína</span>
+            <span className="text-slate-600 dark:text-slate-300">Proteína</span>
             <span className="font-medium">{fmt0(b.protein)} / {fmt0(b.proteinGoal)} g</span>
           </div>
           <Progress value={b.protein} max={b.proteinGoal} tone="sky" />
@@ -94,7 +94,7 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
         <label className="flex items-center justify-between">
           <span>
             <span className="font-medium">Dia livre</span>
-            <span className="block text-xs text-slate-500">Lance uma estimativa ou deixe em branco</span>
+            <span className="block text-xs text-slate-500 dark:text-slate-400">Lance uma estimativa ou deixe em branco</span>
           </span>
           <input type="checkbox" className="h-6 w-6 accent-emerald-600" checked={!!free} onChange={toggleFree} />
         </label>
@@ -103,23 +103,23 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
         )}
       </Card>
 
-      {(['almoco', 'jantar', 'extra'] as MealType[]).map((type) => {
+      {MEAL_TYPES.map((type) => {
         const ms = meals.filter((m) => m.type === type);
         if (!ms.length) return null;
         return (
           <section key={type} className="space-y-2">
-            <h3 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500">{MEAL_LABEL[type]}</h3>
+            <h3 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{MEAL_LABEL[type]}</h3>
             {ms.map((m) => {
               const k = m.items.reduce((a, i) => a + i.kcal, 0);
               const pr = m.items.reduce((a, i) => a + i.prot, 0);
               return (
                 <button key={m.id} className="block w-full text-left" onClick={() => setOpen({ kind: 'meal', meal: m })}>
-                  <Card className="active:bg-slate-50">
+                  <Card className="active:bg-slate-50 dark:active:bg-slate-800">
                     <div className="flex justify-between font-medium">
                       <span>{m.favoriteName ? `⭐ ${m.favoriteName}` : MEAL_LABEL[m.type]}</span>
                       <span>{fmt0(k)} kcal · {fmt0(pr)} g P</span>
                     </div>
-                    <div className="mt-1 text-sm text-slate-500">{m.items.map((i) => `${i.name} ${fmt0(i.grams)} g`).join(' · ')}</div>
+                    <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{m.items.map((i) => `${i.name} ${fmt0(i.grams)} g`).join(' · ')}</div>
                   </Card>
                 </button>
               );
@@ -130,10 +130,10 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
 
       {workouts.length > 0 && (
         <section className="space-y-2">
-          <h3 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500">Treinos</h3>
+          <h3 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Treinos</h3>
           {workouts.map((w) => (
             <button key={w.id} className="block w-full text-left" onClick={() => setOpen({ kind: 'workout', workout: w })}>
-              <Card className="flex justify-between active:bg-slate-50">
+              <Card className="flex justify-between active:bg-slate-50 dark:active:bg-slate-800">
                 <span className="font-medium">{WORKOUT_LABEL[w.kind]} · {fmt0(w.minutes)} min{w.km ? ` · ${fmt2(w.km)} km` : ''}</span>
                 <span>{fmt0(w.kcal)} kcal</span>
               </Card>
@@ -144,7 +144,7 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
 
       {weighIn && (
         <button className="block w-full text-left" onClick={() => setOpen({ kind: 'weight', entry: weighIn })}>
-          <Card className="flex justify-between active:bg-slate-50">
+          <Card className="flex justify-between active:bg-slate-50 dark:active:bg-slate-800">
             <span className="font-medium">⚖️ Pesagem em jejum</span>
             <span>{fmt1(weighIn.kg)} kg</span>
           </Card>
@@ -160,8 +160,8 @@ export function Today({ date, setDate }: { date: string; setDate: (d: string) =>
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 py-2">
-      <div className="text-xs text-slate-500">{label}</div>
+    <div className="rounded-xl bg-slate-50 dark:bg-slate-800 py-2">
+      <div className="text-xs text-slate-500 dark:text-slate-400">{label}</div>
       <div className="font-semibold">{value}</div>
     </div>
   );

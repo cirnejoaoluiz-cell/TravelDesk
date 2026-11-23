@@ -33,7 +33,7 @@ export function Settings() {
       <h1 className="text-lg font-semibold">Ajustes</h1>
 
       <section className="space-y-2">
-        <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500">Perfil e meta</h2>
+        <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Perfil e meta</h2>
         {editProfile ? (
           <ProfileForm
             initial={data.profile}
@@ -45,7 +45,7 @@ export function Settings() {
           />
         ) : (
           <Card className="flex items-center justify-between">
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-slate-600 dark:text-slate-300">
               {data.profile && (
                 <>
                   {data.profile.sex === 'M' ? 'Masc.' : 'Fem.'}, {data.profile.age} anos, {data.profile.heightCm} cm<br />
@@ -60,13 +60,13 @@ export function Settings() {
 
       <section className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Alimentos (por 100 g)</h2>
-          <button className="text-sm font-medium text-emerald-700" onClick={() => setEditFood('new')}>+ Novo</button>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Alimentos (por 100 g)</h2>
+          <button className="text-sm font-medium text-emerald-700 dark:text-emerald-400" onClick={() => setEditFood('new')}>+ Novo</button>
         </div>
         {editFood === 'new' && (
           <FoodForm onCancel={() => setEditFood(null)} onSave={(f) => { update((d) => ({ ...d, foods: [...d.foods, f] })); setEditFood(null); }} />
         )}
-        <Card className="divide-y divide-slate-100 p-0">
+        <Card className="divide-y divide-slate-100 dark:divide-slate-800 p-0">
           {foods.map((f) =>
             editFood !== 'new' && editFood?.id === f.id ? (
               <div key={f.id} className="p-2">
@@ -88,9 +88,9 @@ export function Settings() {
                 </Button>
               </div>
             ) : (
-              <button key={f.id} className="flex w-full justify-between px-4 py-3 text-left active:bg-slate-50" onClick={() => setEditFood(f)}>
-                <span>{f.name}{f.portions?.length ? <span className="ml-1 text-xs text-slate-400">({f.portions.map((p) => `${p.label} = ${p.grams} g`).join(', ')})</span> : null}</span>
-                <span className="text-sm text-slate-500">{fmt0(f.kcal100)} kcal · {fmt1(f.prot100)} g P</span>
+              <button key={f.id} className="flex w-full justify-between px-4 py-3 text-left active:bg-slate-50 dark:active:bg-slate-800" onClick={() => setEditFood(f)}>
+                <span>{f.name}{f.portions?.length ? <span className="ml-1 text-xs text-slate-400 dark:text-slate-500">({f.portions.map((p) => `${p.label} = ${p.grams} g`).join(', ')})</span> : null}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{fmt0(f.kcal100)} kcal · {fmt1(f.prot100)} g P</span>
               </button>
             ),
           )}
@@ -98,9 +98,9 @@ export function Settings() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500">Refeições favoritas</h2>
-        <Card className="divide-y divide-slate-100 p-0">
-          {data.favorites.length === 0 && <p className="p-4 text-sm text-slate-500">Marque “salvar como favorita” ao lançar uma refeição.</p>}
+        <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Refeições favoritas</h2>
+        <Card className="divide-y divide-slate-100 dark:divide-slate-800 p-0">
+          {data.favorites.length === 0 && <p className="p-4 text-sm text-slate-500 dark:text-slate-400">Marque “salvar como favorita” ao lançar uma refeição.</p>}
           {data.favorites.map((fav) => {
             const desc = fav.items.map((it) => {
               const food = data.foods.find((f) => f.id === it.foodId);
@@ -109,11 +109,11 @@ export function Settings() {
             return (
               <div key={fav.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <span className="text-sm">
-                  <b>⭐ {fav.name}</b> <span className="text-slate-500">· {MEAL_LABEL[fav.type]} · {fmt0(desc.reduce((a, x) => a + x.kcal, 0))} kcal</span>
-                  <span className="block text-xs text-slate-500">{desc.map((x) => `${x.name} ${fmt0(x.grams)} g`).join(' · ')}</span>
+                  <b>⭐ {fav.name}</b> <span className="text-slate-500 dark:text-slate-400">· {MEAL_LABEL[fav.type]} · {fmt0(desc.reduce((a, x) => a + x.kcal, 0))} kcal</span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-400">{desc.map((x) => `${x.name} ${fmt0(x.grams)} g`).join(' · ')}</span>
                 </span>
                 <button
-                  className="text-xl text-slate-400"
+                  className="text-xl text-slate-400 dark:text-slate-500"
                   aria-label="Apagar favorita"
                   onClick={() => confirm(`Apagar a favorita "${fav.name}"?`) && update((d) => ({ ...d, favorites: d.favorites.filter((x) => x.id !== fav.id) }))}
                 >
@@ -126,9 +126,9 @@ export function Settings() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500">Backup</h2>
+        <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Backup</h2>
         <Card className="space-y-3">
-          <p className="text-sm text-slate-600">Os dados ficam só neste aparelho. Exporte um arquivo JSON de vez em quando para não perder nada.</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300">Os dados ficam só neste aparelho. Exporte um arquivo JSON de vez em quando para não perder nada.</p>
           <div className="grid grid-cols-2 gap-3">
             <Button onClick={() => exportJSON(data)}>Exportar JSON</Button>
             <Button variant="secondary" onClick={() => fileRef.current?.click()}>Importar JSON</Button>
@@ -144,7 +144,7 @@ export function Settings() {
               e.target.value = '';
             }}
           />
-          {msg && <p className="text-sm text-slate-700">{msg}</p>}
+          {msg && <p className="text-sm text-slate-700 dark:text-slate-200">{msg}</p>}
           <Button
             variant="danger"
             className="w-full"

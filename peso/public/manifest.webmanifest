@@ -1,6 +1,6 @@
 {
-  "name": "Déficit — controle de peso",
-  "short_name": "Déficit",
+  "name": "Kcalc — controle de peso",
+  "short_name": "Kcalc",
   "description": "Acompanhe déficit calórico, treinos e peso.",
   "lang": "pt-BR",
   "start_url": "./",

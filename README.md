@@ -10,7 +10,7 @@ Publicado automaticamente pelo GitHub Pages (`.github/workflows/deploy.yml`) a c
 
 No iPad/iPhone, abra o site no Safari → Compartilhar → **Adicionar à Tela de Início**. O TravelDesk abre como um app e o Safari deixa de apagar os dados do site após dias sem uso.
 
-> Este repositório também contém o **Déficit**, app de controle de perda de peso, na pasta [`peso/`](peso/README.md), publicado em `/peso/`.
+> Este repositório também contém o **Kcalc**, app de controle de perda de peso, na pasta [`peso/`](peso/README.md), publicado em `/peso/`.
 
 ## Como executar
 

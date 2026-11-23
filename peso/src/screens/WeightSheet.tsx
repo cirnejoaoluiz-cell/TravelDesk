@@ -35,7 +35,7 @@ export function WeightSheet({ date, entry, onClose }: { date: string; entry?: We
         <Field label="Data">
           <input type="date" className={inputCls} value={d} onChange={(e) => setD(e.target.value)} />
         </Field>
-        {existing && <p className="text-sm text-amber-700">Já existe pesagem nesse dia ({existing.kg} kg); ela será substituída.</p>}
+        {existing && <p className="text-sm text-amber-700 dark:text-amber-400">Já existe pesagem nesse dia ({existing.kg} kg); ela será substituída.</p>}
         <div className="flex gap-3">
           {entry && <Button variant="danger" onClick={remove}>Apagar</Button>}
           <Button className="flex-1" disabled={!(kg > 20 && kg < 400) || !d} onClick={save}>Salvar</Button>

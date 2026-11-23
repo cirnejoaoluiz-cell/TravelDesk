@@ -20,28 +20,28 @@ export function Week({ onOpenDay }: { onOpenDay: (d: string) => void }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 disabled:opacity-30" disabled={idx <= 0} onClick={() => setIdx(idx - 1)}>‹</button>
+        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 dark:text-slate-400 disabled:opacity-30" disabled={idx <= 0} onClick={() => setIdx(idx - 1)}>‹</button>
         <div className="text-center">
           <div className="text-lg font-semibold">Semana {idx + 1} de {p.weeks}</div>
-          <div className="text-xs text-slate-500">{formatShort(w.start)} – {formatShort(w.end)}</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">{formatShort(w.start)} – {formatShort(w.end)}</div>
         </div>
-        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 disabled:opacity-30" disabled={idx >= p.weeks - 1} onClick={() => setIdx(idx + 1)}>›</button>
+        <button className="rounded-full px-4 py-2 text-2xl text-slate-500 dark:text-slate-400 disabled:opacity-30" disabled={idx >= p.weeks - 1} onClick={() => setIdx(idx + 1)}>›</button>
       </div>
 
       <Card className="space-y-3">
         <div className="flex items-end justify-between">
           <div>
-            <div className="text-sm text-slate-500">Déficit acumulado</div>
-            <div className="text-3xl font-bold text-emerald-600">{fmt0(w.accumulated)}</div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">Déficit acumulado</div>
+            <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{fmt0(w.accumulated)}</div>
           </div>
-          <div className="text-right text-sm text-slate-500">
-            meta da semana<br /><span className="font-semibold text-slate-700">{fmt0(w.target)} kcal</span>
+          <div className="text-right text-sm text-slate-500 dark:text-slate-400">
+            meta da semana<br /><span className="font-semibold text-slate-700 dark:text-slate-200">{fmt0(w.target)} kcal</span>
           </div>
         </div>
         <Progress value={w.accumulated} max={w.target} />
-        <div className="text-sm text-slate-600">{fmt0(pct)}% da meta</div>
+        <div className="text-sm text-slate-600 dark:text-slate-300">{fmt0(pct)}% da meta</div>
         {!past && !future && (
-          <div className={`rounded-xl p-3 text-sm ${w.remaining <= 0 ? 'bg-emerald-50 text-emerald-900' : 'bg-sky-50 text-sky-900'}`}>
+          <div className={`rounded-xl p-3 text-sm ${w.remaining <= 0 ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200' : 'bg-sky-50 dark:bg-sky-950 text-sky-900 dark:text-sky-200'}`}>
             {w.remaining <= 0 ? (
               <>🎉 Meta da semana já batida com os dias encerrados.</>
             ) : (
@@ -53,7 +53,7 @@ export function Week({ onOpenDay }: { onOpenDay: (d: string) => void }) {
           </div>
         )}
         {past && (
-          <div className={`rounded-xl p-3 text-sm ${w.accumulated >= w.target ? 'bg-emerald-50 text-emerald-900' : 'bg-amber-50 text-amber-900'}`}>
+          <div className={`rounded-xl p-3 text-sm ${w.accumulated >= w.target ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200' : 'bg-amber-50 dark:bg-amber-950 text-amber-900 dark:text-amber-200'}`}>
             {w.accumulated >= w.target ? 'Meta batida ✅' : `Ficou ${fmt0(w.target - w.accumulated)} kcal abaixo da meta.`}
           </div>
         )}
@@ -73,18 +73,18 @@ function DayRow({ d, maxAbs, isToday, onClick }: { d: DayBalance; maxAbs: number
   const tag =
     d.status === 'livre-estimado' ? 'livre (est.)' : d.status === 'livre-branco' ? 'livre' : d.status === 'sem-registro' ? 'sem registro' : '';
   return (
-    <button onClick={onClick} className={`grid w-full grid-cols-[3.2rem_1fr_4.5rem] items-center gap-2 rounded-lg px-1 py-2 text-left active:bg-slate-100 ${isToday ? 'bg-emerald-50' : ''}`}>
+    <button onClick={onClick} className={`grid w-full grid-cols-[3.2rem_1fr_4.5rem] items-center gap-2 rounded-lg px-1 py-2 text-left active:bg-slate-100 dark:active:bg-slate-800 ${isToday ? 'bg-emerald-50 dark:bg-emerald-950' : ''}`}>
       <span className="text-sm">
         <span className="font-medium capitalize">{weekdayShort(d.date)}</span>
-        <span className="block text-xs text-slate-500">{formatShort(d.date)}</span>
+        <span className="block text-xs text-slate-500 dark:text-slate-400">{formatShort(d.date)}</span>
       </span>
       <span className="relative h-5">
         {d.counts ? (
           <span className={`absolute inset-y-0 left-0 rounded ${d.deficit >= 0 ? 'bg-emerald-400' : 'bg-red-400'}`} style={{ width: `${width}%` }} />
         ) : null}
-        {tag && <span className="absolute inset-y-0 left-1 flex items-center text-xs text-slate-500">{tag}</span>}
+        {tag && <span className="absolute inset-y-0 left-1 flex items-center text-xs text-slate-500 dark:text-slate-400">{tag}</span>}
       </span>
-      <span className={`text-right text-sm font-medium ${d.deficit < 0 ? 'text-red-600' : ''}`}>{d.counts ? fmt0(d.deficit) : '—'}</span>
+      <span className={`text-right text-sm font-medium ${d.deficit < 0 ? 'text-red-600 dark:text-red-400' : ''}`}>{d.counts ? fmt0(d.deficit) : '—'}</span>
     </button>
   );
 }
