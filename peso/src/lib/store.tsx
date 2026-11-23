@@ -65,7 +65,7 @@ export function exportJSON(data: AppData) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `deficit-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `kcalc-backup-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();

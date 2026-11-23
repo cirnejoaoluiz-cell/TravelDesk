@@ -6,7 +6,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 pt-[env(safe-area-inset-top)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
       <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-2">
-        <span className="text-lg font-bold text-emerald-700 dark:text-emerald-400">Déficit</span>
+        <span className="text-lg font-bold text-emerald-700 dark:text-emerald-400">Kcalc</span>
         <button
           type="button"
           role="switch"

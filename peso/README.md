@@ -1,4 +1,4 @@
-# Déficit — controle de perda de peso
+# Kcalc — controle de perda de peso
 
 Web app mobile-first (React + Vite + Tailwind), instalável no celular (PWA). Os dados ficam no `localStorage` do aparelho (chave `deficit:data`), com exportação/importação de backup em JSON (Ajustes → Backup).
 
@@ -32,3 +32,5 @@ npm run build    # gera dist/
 - **Dia livre** com estimativa usa a estimativa como consumo; em branco conta como déficit 0.
 - Semanas contadas a partir da data de início do plano. "Quanto falta por dia" = (meta − déficit dos dias já encerrados) ÷ dias restantes, incluindo hoje.
 - Gráfico de peso: pesagens, média móvel de 7 dias corridos, linha da meta e peso previsto pelo déficit acumulado (÷ 7.700).
+
+> As chaves do `localStorage` (`deficit:data`, `deficit:theme`) mantêm o nome antigo do app para não perder os dados de quem já usa.
